@@ -7,9 +7,9 @@ Current Features
 ----------------
 
 >### v.1
-> Default subreddit listing is now showing on launch page
-> Browsing first page of articles with thumbnail images
-> Links are now opening in the default browser.
+> * Default subreddit listing is now showing on launch page
+> * Browsing first page of articles with thumbnail images
+> * Links are now opening in the default browser.
 
 Planned Features
 ----------------

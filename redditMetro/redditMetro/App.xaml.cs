@@ -15,8 +15,12 @@ namespace redditMetro
         // TODO: Create a data model appropriate for your problem domain to replace the sample data
         private static SampleDataSource _sampleData;
 
-        public static IEnumerable<Subreddit> Subreddits { get; set; }
+        public static List<Subreddit> Subreddits { get; set; }
+        public static ListingResponse Posts { get; set; }
         public static Subreddit SelectedSubreddit { get; set; }
+        public static Subreddit PreviousSubreddit { get; set; }
+        public static DateTime LastRefresh { get; set; }
+        public static TimeSpan RefreshInterval = new TimeSpan(0, 0, 5, 0, 0);
 
         public App()
         {
@@ -25,6 +29,7 @@ namespace redditMetro
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
+            LastRefresh = DateTime.Now;
             ShowCollection();
             Window.Current.Activate();
         }

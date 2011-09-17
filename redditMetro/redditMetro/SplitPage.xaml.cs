@@ -109,14 +109,23 @@ namespace redditMetro
             DisplayProperties.OrientationChanged += _displayHandler;
             ApplicationLayout.GetForCurrentView().LayoutChanged += _layoutHandler;
 
-            var client = new HttpClient();
-            var response = client.GetAsync("http://www.reddit.com" + App.SelectedSubreddit.data.url + ".json").Result.Content;
-            LoadCollection(response);
+            if (App.PreviousSubreddit == null || App.PreviousSubreddit != App.SelectedSubreddit || App.LastRefresh < DateTime.Now.Subtract(App.RefreshInterval))
+            {
+                var client = new HttpClient();
+                var response = client.GetAsync("http://www.reddit.com" + App.SelectedSubreddit.data.url + ".json").Result.Content;
+                LoadCollection(response);
+                App.LastRefresh = DateTime.Now;
+            }
+            else
+            {
+                Items = App.Posts.children;
+            }
             SetCurrentViewState(this);
         }
 
         private void LoadCollection(HttpContent response)
         {
+            App.PreviousSubreddit = App.SelectedSubreddit;
             DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(ListingBaseResponse));
             var data = (ListingBaseResponse)deserializer.ReadObject(response.ContentReadStream);
 
@@ -128,6 +137,7 @@ namespace redditMetro
                     o.data.thumbnail = "http://www.reddit.com" + o.data.thumbnail;
             }
             PageTitle.Text = App.SelectedSubreddit.data.url;
+            App.Posts = data.data;
             Items = data.data.children;
             //CollectionViewSource.Source = data.data.children;
         }

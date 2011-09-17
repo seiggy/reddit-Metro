@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+  <Identity Name="213ad943-e2ca-493c-a5ba-14a39465b01e" Publisher="CN=seiggy2k" Version="1.0.0.1" />
+  <Properties>
+    <DisplayName>reddit metro</DisplayName>
+    <PublisherDisplayName>seiggy2k</PublisherDisplayName>
+    <Logo>Images\logo.56x56.png</Logo>
+    <Description>redditMetro</Description>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.2</OSMinVersion>
+    <OSMaxVersionTested>6.2</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="redditmetro.exe" EntryPoint="redditMetro.App">
+      <VisualElements DisplayName="reddit metro" Logo="Images\logo.150x150.png" SmallLogo="Images\logo.30x30.png" Description="reddit metro ui based app for browsing, commenting, and posting to reddit." ForegroundText="light" BackgroundColor="#CEE3F8" InitialRotationPreference="portrait" ToastCapable="true">
+        <LockScreen Notification="badgeAndTileText" BadgeLogo="Images\logo.24x24.png" />
+        <DefaultTile WideLogo="Images\widelogo.png" ShowName="true" />
+        <SplashScreen Image="Images\SplashScreen.png" BackgroundColor="#CEE3F8" />
+      </VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+  </Capabilities>
+</Package>

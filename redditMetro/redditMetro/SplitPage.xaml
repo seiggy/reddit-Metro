@@ -204,8 +204,8 @@
         <HyperlinkButton Click="LinkClicked" Content="Link" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource SmallContentFontStyle}" Foreground="{StaticResource HighlightBrush}" Height="20" Margin="0" />
         <!--<TextBlock Text="{Binding data.url}" HorizontalAlignment="Left" VerticalAlignment="Top" TextTrimming="WordEllipsis" Style="{StaticResource SmallContentFontStyle}" Foreground="{StaticResource HighlightBrush}" Height="20" Margin="0"/>-->
         <TextBlock Text="{Binding data.score}" HorizontalAlignment="Left" VerticalAlignment="Top" TextTrimming="WordEllipsis" Style="{StaticResource SmallContentFontStyle}" Height="60" Margin="0"/>
+        <Button x:Name="ShareButton" Content="Share" />
       </StackPanel>
     </ContentControl>
   </Grid>
-
 </UserControl>

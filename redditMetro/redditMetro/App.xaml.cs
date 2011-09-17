@@ -7,6 +7,10 @@ using Windows.UI.Xaml.Data;
 using redditMetro.Models;
 using System.Collections;
 using System.Collections.Generic;
+using Windows.Storage;
+using Windows.Foundation.Collections;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.Search;
 
 namespace redditMetro
 {
@@ -21,15 +25,25 @@ namespace redditMetro
         public static Subreddit PreviousSubreddit { get; set; }
         public static DateTime LastRefresh { get; set; }
         public static TimeSpan RefreshInterval = new TimeSpan(0, 0, 1, 0, 0);
+        public static IPropertySet Settings { get; set; }
+        public const string CONTAINER_NAME = "redditMetro";
+        public static SearchPane SearchPane { get; set; }
 
         public App()
         {
             InitializeComponent();
         }
 
+        public static void LoadSettings()
+        {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            Settings = localSettings.CreateContainer(CONTAINER_NAME, ApplicationDataCreateDisposition.Always).Values;
+        }
+
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
             LastRefresh = DateTime.Now;
+            LoadSettings();
             ShowCollection();
             Window.Current.Activate();
         }
@@ -50,6 +64,30 @@ namespace redditMetro
             page.Items = collection;
             page.Context = collection.Key;
             Window.Current.Content = page;
+        }
+
+        async protected override void OnSearchActivated(SearchActivatedEventArgs args)
+        {
+            base.OnSearchActivated(args);
+            await EnsureSplitPageAsync(args);
+            ((SplitPage)Window.Current.Content).Search(args.QueryText);
+        }
+
+        async private Task EnsureSplitPageAsync(IActivatedEventArgs args)
+        {
+            if (args.PreviousExecutionState == ApplicationExecutionState.Terminated)
+            {
+                // rehydrate any settings we need
+            }
+
+            if (Window.Current.Content == null)
+            {
+                var page = new SplitPage();
+                page.Items = null;
+                page.Context = null;
+                Window.Current.Content = page;
+                Window.Current.Activate();
+            }
         }
     }
 }

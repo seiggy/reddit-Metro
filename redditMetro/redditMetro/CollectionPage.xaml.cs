@@ -5,6 +5,7 @@ using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
 using redditMetro.Models;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Search;
 using Windows.Data.Json;
 using Windows.Foundation;
 using Windows.Graphics.Display;
@@ -22,6 +23,7 @@ namespace redditMetro
         {
             InitializeComponent();
             BackButton.IsEnabled = false;
+            App.SearchPane = SearchPane.GetForCurrentView();
         }
 
         void ItemView_SelectionChanged(object sender, SelectionChangedEventArgs e)

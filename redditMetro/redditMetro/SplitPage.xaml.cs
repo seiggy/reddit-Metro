@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
 using redditMetro.Models;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Search;
 using Windows.Foundation;
 using Windows.Graphics.Display;
 using Windows.System;
@@ -21,7 +23,57 @@ namespace redditMetro
         public SplitPage()
         {
             InitializeComponent();
+            App.SearchPane = SearchPane.GetForCurrentView();
+            App.SearchPane.QuerySubmitted += new TypedEventHandler<SearchPane, SearchPaneQuerySubmittedEventArgs>(SearchPane_QuerySubmitted);
+            ShareSourceLoad();
+            ShareButton.Click += new RoutedEventHandler(ShareButton_Click);
         }
+
+        #region Search Code
+        void SearchPane_QuerySubmitted(SearchPane sender, SearchPaneQuerySubmittedEventArgs args)
+        {
+            // search something
+        }
+
+        public void Search(string queryText)
+        {
+            // do a search here for the text sent
+        }
+        #endregion
+
+        #region Sharing Code
+        public void ShareSourceLoad()
+        {
+            DataTransferManager datatransferManager;
+            datatransferManager = DataTransferManager.GetForCurrentView();
+            datatransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(datatransferManager_DataRequested);
+        }
+
+        void datatransferManager_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
+        {
+            ListingItem item = ItemListView.SelectedItem as ListingItem;
+            if (item == null)
+            {
+                args.Request.FailWithDisplayText("You must select a story from the left to share first.");
+            }
+            args.Request.Data.Properties.Title = "Link Shared from reddit Metro";
+            args.Request.Data.Properties.Description = item.data.title;
+            args.Request.Data.Properties.ApplicationName = "reddit Metro";
+            if (item.data.is_self)
+            {
+                args.Request.Data.SetHtml(item.data.selftext_html);
+            }
+            else
+            {
+                args.Request.Data.SetUri(new Uri(item.data.url));
+            }
+        }
+
+        void ShareButton_Click(object sender, RoutedEventArgs e)
+        {
+            DataTransferManager.ShowShareUI();
+        }
+        #endregion
 
         private bool _ignoreReentrancy;
         public Subreddit selectedSubreddit { get; set; }
@@ -32,9 +84,20 @@ namespace redditMetro
             //Temporary: Workaround for view state change disturbing selection
             _ignoreReentrancy = true;
             var selectedItem = ItemListView.SelectedItem;
+
             this.SetCurrentViewState(this);
             ItemListView.SelectedItem = selectedItem;
+
+            // Need to think and be careful here about how I load the comments data. 
+            // I don't want to poll for too much data from reddit, as to cause extra load.
+            LoadComments();
+
             _ignoreReentrancy = false;
+        }
+
+        void LoadComments()
+        {
+
         }
 
         void LinkClicked(object sender, RoutedEventArgs e)

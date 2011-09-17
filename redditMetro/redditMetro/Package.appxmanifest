@@ -21,6 +21,9 @@
         <DefaultTile WideLogo="Images\widelogo.png" ShowName="true" />
         <SplashScreen Image="Images\SplashScreen.png" BackgroundColor="#CEE3F8" />
       </VisualElements>
+      <Extensions>
+        <Extension Category="windows.search" />
+      </Extensions>
     </Application>
   </Applications>
   <Capabilities>

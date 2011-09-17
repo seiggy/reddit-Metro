@@ -5,6 +5,13 @@ reddit Metro is a Windows 8 Metro UI based application for browsing reddit, chec
 
 Current Features
 ----------------
+>### v.3
+> * Added images for most of the default subreddits
+> * adjusted the subreddit layout to look a bit better
+> * changed the styles of the pages around to better match the "reddit" style color theme
+> * added share-to support to share reddit articles to other apps
+> * fixed some layout weirdness on the detail view. still needs work
+
 
 >### v.1
 > * Default subreddit listing is now showing on launch page

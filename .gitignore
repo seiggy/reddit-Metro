@@ -33,3 +33,9 @@ redditMetro/redditMetro/Packages/redditMetro_1.0.0.1_AnyCPU_Debug_Test/reddit.me
 redditMetro/redditMetro/Packages/redditMetro_1.0.0.1_AnyCPU_Debug_Test/redditMetro_1.0.0.1_AnyCPU_Debug.appx
 redditMetro/redditMetro/Packages/redditMetro_1.0.0.1_AnyCPU_Debug_Test/redditMetro_1.0.0.1_AnyCPU_Debug.appxsym
 redditMetro/redditMetro/Packages/redditMetro_1.0.0.1_AnyCPU_Debug_Test/redditMetro_1.0.0.1_AnyCPU_Debug.cer
+*.appxupload
+*.bat
+*.zip
+*.appx
+*.appxsym
+redditMetro/redditMetro/Packages/*

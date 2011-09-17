@@ -80,6 +80,49 @@ namespace redditMetro
         {
             DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(SubredditResponse));
             var data = (SubredditResponse)deserializer.ReadObject(messageTask.ContentReadStream);
+            foreach (Subreddit r in data.data.children)
+            {
+                if (r.data.url.ToLower().Contains("/r/pics"))
+                    r.data.image = "/Images/r.pics.png";
+                else if (r.data.url.ToLower().Contains("/r/gaming"))
+                    r.data.image = "/Images/r.gaming.png";
+                else if (r.data.url.ToLower().Contains("/r/askreddit"))
+                    r.data.image = "/Images/r.askreddit.png";
+                else if (r.data.url.ToLower().Contains("/r/atheism"))
+                    r.data.image = "/Images/r.atheism.png";
+                else if (r.data.url.ToLower().Contains("/r/circlejerk"))
+                    r.data.image = "/Images/r.circlejerk.png";
+                else if (r.data.url.ToLower().Contains("/r/comics"))
+                    r.data.image = "/Images/r.comics.png";
+                else if (r.data.url.ToLower().Contains("/r/fffffffuuuuuuuuuuuu"))
+                    r.data.image = "/Images/r.fu.png";
+                else if (r.data.url.ToLower().Contains("/r/iama"))
+                    r.data.image = "/Images/r.iama.png";
+                else if (r.data.url.ToLower().Contains("/r/minecraft"))
+                    r.data.image = "/Images/r.minecraft.png";
+                else if (r.data.url.ToLower().Contains("/r/music"))
+                    r.data.image = "/Images/r.music.png";
+                else if (r.data.url.ToLower().Contains("/r/science"))
+                    r.data.image = "/Images/r.science.png";
+                else if (r.data.url.ToLower().Contains("/r/technology"))
+                    r.data.image = "/Images/r.technology.png";
+                else if (r.data.url.ToLower().Contains("/r/tf2"))
+                    r.data.image = "/Images/r.tf2.png";
+                else if (r.data.url.ToLower().Contains("/r/todayilearned"))
+                    r.data.image = "/Images/r.todayilearned.png";
+                else if (r.data.url.ToLower().Contains("/r/trees"))
+                    r.data.image = "/Images/r.trees.png";
+                else if (r.data.url.ToLower().Contains("/r/twoxchromosomes"))
+                    r.data.image = "/Images/r.twoxchromosomes.png";
+                else if (r.data.url.ToLower().Contains("/r/videos"))
+                    r.data.image = "/Images/r.videos.png";
+                else if (r.data.url.ToLower().Contains("/r/worldnews"))
+                    r.data.image = "/Images/r.worldnews.png";
+                else if (r.data.url.ToLower().Contains("/r/wtf"))
+                    r.data.image = "/Images/r.wtf.png";
+                else
+                    r.data.image = "/Images/reddit.com.header.png";
+            }
             App.Subreddits = data.data.children;
             CollectionViewSource.Source = data.data.children;
         }

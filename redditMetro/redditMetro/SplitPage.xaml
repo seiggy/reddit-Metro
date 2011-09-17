@@ -15,12 +15,9 @@
         <StackPanel HorizontalAlignment="Stretch" Orientation="Vertical" Margin="0,55,0,36">
           <Grid>
             <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto"></ColumnDefinition>
               <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-
-            <Image Height="232" Width="240" Source="{Binding Image}" Margin="0,0,16,0" HorizontalAlignment="Left" Stretch="UniformToFill"/>
-            <ContentPresenter Grid.Column="1" VerticalAlignment="Center"/>
+            <ContentPresenter Grid.Column="0" VerticalAlignment="Top"/>
           </Grid>
           <TextBlock x:Name="DetailTextBlock" Text="{Binding Content}" HorizontalAlignment="Left" Margin="0,20,0,0" Style="{StaticResource ReadingFontStyle}" Height="Auto" TextWrapping="Wrap"/>
         </StackPanel>
@@ -54,7 +51,7 @@
             </Grid.RowDefinitions>
 
             <ContentPresenter/>
-            <Image Height="232" Width="240" Source="{Binding Image}" Grid.Row="1" Margin="0,20,0,20" HorizontalAlignment="Left" Stretch="UniformToFill"/>
+            <Image Height="232" Width="240" Source="{Binding data.thumbnail}" Grid.Row="1" Margin="0,20,0,20" HorizontalAlignment="Left" Stretch="UniformToFill"/>
           </Grid>
           <TextBlock x:Name="DetailTextBlock" Text="{Binding Content}" HorizontalAlignment="Left" Style="{StaticResource ReadingFontStyle}" Height="Auto" TextWrapping="Wrap"/>
         </StackPanel>
@@ -64,7 +61,7 @@
 
   <!-- Page Content -->
 
-  <Grid x:Name="LayoutRoot" Style="{StaticResource LayoutRootGridStyle}">
+    <Grid x:Name="LayoutRoot" Style="{StaticResource LayoutRootGridStyle}" Background="#CEE3F8">
     <VisualStateManager.VisualStateGroups>
       <VisualStateGroup x:Name="OrientationStates">
         <VisualState x:Name="Full"/>
@@ -201,8 +198,8 @@
          a templated control to allow for two significantly rearranged views. -->
 
     <ContentControl x:Name="ItemDetail" Template="{StaticResource ItemDetailTemplate}" DataContext="{Binding SelectedItem, ElementName=ItemListView}" Grid.RowSpan="2" Grid.Column="1">
-      <StackPanel x:Name="ItemStackPanel" Orientation="Vertical" Width="280" HorizontalAlignment="Left">
-        <TextBlock Text="{Binding data.title}" MaxHeight="80" TextTrimming="WordEllipsis" HorizontalAlignment="Left" Style="{StaticResource LargeContentFontStyle}" Margin="0" />
+      <StackPanel x:Name="ItemStackPanel" Orientation="Vertical" HorizontalAlignment="Left">
+        <TextBlock Text="{Binding data.title}" MaxHeight="80" TextTrimming="None" HorizontalAlignment="Left" Style="{StaticResource LargeContentFontStyle}" Margin="0" />
         <TextBlock Text="{Binding data.subreddit}" HorizontalAlignment="Left" VerticalAlignment="Top"  TextTrimming="WordEllipsis" Style="{StaticResource SmallContentFontStyle}" Height="20" Margin="0"/>
         <HyperlinkButton Click="LinkClicked" Content="Link" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource SmallContentFontStyle}" Foreground="{StaticResource HighlightBrush}" Height="20" Margin="0" />
         <!--<TextBlock Text="{Binding data.url}" HorizontalAlignment="Left" VerticalAlignment="Top" TextTrimming="WordEllipsis" Style="{StaticResource SmallContentFontStyle}" Foreground="{StaticResource HighlightBrush}" Height="20" Margin="0"/>-->

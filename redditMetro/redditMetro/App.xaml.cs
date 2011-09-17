@@ -20,7 +20,7 @@ namespace redditMetro
         public static Subreddit SelectedSubreddit { get; set; }
         public static Subreddit PreviousSubreddit { get; set; }
         public static DateTime LastRefresh { get; set; }
-        public static TimeSpan RefreshInterval = new TimeSpan(0, 0, 5, 0, 0);
+        public static TimeSpan RefreshInterval = new TimeSpan(0, 0, 1, 0, 0);
 
         public App()
         {

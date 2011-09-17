@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
@@ -119,6 +120,7 @@ namespace redditMetro
             else
             {
                 Items = App.Posts.children;
+                PageTitle.Text = App.SelectedSubreddit.data.url;
             }
             SetCurrentViewState(this);
         }
@@ -127,14 +129,21 @@ namespace redditMetro
         {
             App.PreviousSubreddit = App.SelectedSubreddit;
             DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(ListingBaseResponse));
+            StreamReader sr = new StreamReader(response.ContentReadStream);
+            string dataString = sr.ReadToEnd();
+            sr.BaseStream.Seek(0, SeekOrigin.Begin);
             var data = (ListingBaseResponse)deserializer.ReadObject(response.ContentReadStream);
 
             foreach (var o in data.data.children)
             {
                 if (o.data.thumbnail.Contains("http:"))
                     continue;
-                else
+                else if (!o.data.is_self && !string.IsNullOrEmpty(o.data.thumbnail))
                     o.data.thumbnail = "http://www.reddit.com" + o.data.thumbnail;
+                else if (o.data.is_self)
+                    o.data.thumbnail = "/Images/self_default2.png";
+                else
+                    o.data.thumbnail = "/Images/noimage.png";
             }
             PageTitle.Text = App.SelectedSubreddit.data.url;
             App.Posts = data.data;

@@ -78,7 +78,7 @@ namespace redditMetro.Models
         public String selftext_html { get; set; }
         public string subreddit { get; set; }
         public string subreddit_id { get; set; }
-        public string thumbnail { get; set; }
+        public String thumbnail { get; set; }
         public string title { get; set; }
         public string url { get; set; }
     }

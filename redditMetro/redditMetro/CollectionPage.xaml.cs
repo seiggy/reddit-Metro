@@ -80,7 +80,8 @@ namespace redditMetro
 
             SettingsPane settingsPane = SettingsPane.GetForCurrentView();
             
-            settingsPane.ApplicationCommands.Add(new SettingsCommand(KnownSettingsCommand.Account, new UICommandInvokedHandler(AccountCommandHandler)));
+            if(settingsPane.ApplicationCommands.Count == 0)
+                settingsPane.ApplicationCommands.Add(new SettingsCommand(KnownSettingsCommand.Account, new UICommandInvokedHandler(AccountCommandHandler)));
             
             SetCurrentViewState(this);
         }

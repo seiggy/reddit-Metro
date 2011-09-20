@@ -28,7 +28,7 @@ namespace redditMetro
             ShareSourceLoad();
             ShareButton.Click += new RoutedEventHandler(ShareButton_Click);
         }
-
+        
         #region Search Code
         void SearchPane_QuerySubmitted(SearchPane sender, SearchPaneQuerySubmittedEventArgs args)
         {
@@ -44,9 +44,18 @@ namespace redditMetro
         #region Sharing Code
         public void ShareSourceLoad()
         {
-            DataTransferManager datatransferManager;
-            datatransferManager = DataTransferManager.GetForCurrentView();
-            datatransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(datatransferManager_DataRequested);
+            try
+            {
+                DataTransferManager datatransferManager;
+                datatransferManager = DataTransferManager.GetForCurrentView();
+                datatransferManager.DataRequested += new TypedEventHandler<DataTransferManager, DataRequestedEventArgs>(datatransferManager_DataRequested);
+            }
+            catch (Exception)
+            {
+                // it keeps throwing some exception...not sure why
+                // found the exception. Having two versions of the same app installed = bad juju
+                // swallow here just incase something bad happens anyways
+            }
         }
 
         void datatransferManager_DataRequested(DataTransferManager sender, DataRequestedEventArgs args)
@@ -253,6 +262,16 @@ namespace redditMetro
                 return hasSelection ? "SnappedDetail" : "Snapped";
             }
             return "Full";
+        }
+
+        private void btnHome_Click(object sender, RoutedEventArgs e)
+        {
+            App.ShowCollection();
+        }
+
+        private void btnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            Windows.UI.ApplicationSettings.SettingsPane.Show();
         }
     }
 }

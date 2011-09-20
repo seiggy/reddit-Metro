@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="213ad943-e2ca-493c-a5ba-14a39465b01e" Publisher="CN=seiggy2k" Version="1.0.0.3" />
+  <Identity Name="codegeeks.reddit.metro" Publisher="CN=seiggy2k" Version="1.0.0.3" />
   <Properties>
     <DisplayName>reddit metro</DisplayName>
     <PublisherDisplayName>seiggy2k</PublisherDisplayName>

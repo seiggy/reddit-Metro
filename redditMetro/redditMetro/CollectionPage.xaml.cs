@@ -9,6 +9,8 @@ using Windows.ApplicationModel.Search;
 using Windows.Data.Json;
 using Windows.Foundation;
 using Windows.Graphics.Display;
+using Windows.UI.ApplicationSettings;
+using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -75,7 +77,19 @@ namespace redditMetro
             {
                 CollectionViewSource.Source = App.Subreddits;
             }
+
+            SettingsPane settingsPane = SettingsPane.GetForCurrentView();
+            
+            settingsPane.ApplicationCommands.Add(new SettingsCommand(KnownSettingsCommand.Account, new UICommandInvokedHandler(AccountCommandHandler)));
+            
             SetCurrentViewState(this);
+        }
+
+        public void AccountCommandHandler(IUICommand command)
+        {
+            popLogin.VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Center;
+            popLogin.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Center;
+            popLogin.IsOpen = true;
         }
 
         private void LoadCollection(HttpContent messageTask)
@@ -159,6 +173,11 @@ namespace redditMetro
             if (layout == ApplicationLayoutState.Filled) return "Fill";
             if (layout == ApplicationLayoutState.Snapped) return "Snapped";
             return "Full";
+        }
+
+        private void btnSettings_Click(object sender, RoutedEventArgs e)
+        {
+            Windows.UI.ApplicationSettings.SettingsPane.Show();
         }
     }
 }

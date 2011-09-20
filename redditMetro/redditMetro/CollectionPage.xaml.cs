@@ -87,9 +87,7 @@ namespace redditMetro
 
         public void AccountCommandHandler(IUICommand command)
         {
-            popLogin.VerticalAlignment = Windows.UI.Xaml.VerticalAlignment.Center;
-            popLogin.HorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment.Center;
-            popLogin.IsOpen = true;
+            
         }
 
         private void LoadCollection(HttpContent messageTask)

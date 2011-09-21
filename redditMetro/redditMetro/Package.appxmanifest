@@ -18,7 +18,7 @@
     <Application Id="App" Executable="redditmetro.exe" EntryPoint="redditMetro.App">
       <VisualElements DisplayName="reddit metro" Logo="Images\logo.150x150.png" SmallLogo="Images\logo.30x30.png" Description="reddit metro ui based app for browsing, commenting, and posting to reddit." ForegroundText="light" BackgroundColor="#CEE3F8" InitialRotationPreference="portrait" ToastCapable="true">
         <LockScreen Notification="badgeAndTileText" BadgeLogo="Images\logo.24x24.png" />
-        <DefaultTile WideLogo="Images\widelogo.png" ShowName="true" />
+        <DefaultTile WideLogo="Images\widelogo.png" ShowName="true" ShortName="reddit metro" />
         <SplashScreen Image="Images\SplashScreen.png" BackgroundColor="#CEE3F8" />
       </VisualElements>
       <Extensions>

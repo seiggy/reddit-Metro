@@ -3,89 +3,96 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:redditMetro.Controls"
     Loaded="Page_Loaded" Unloaded="Page_Unloaded"
     mc:Ignorable="d"
     d:DesignHeight="768" d:DesignWidth="1366">
 
-  <UserControl.Resources>
-    <CollectionViewSource x:Name="CollectionViewSource" x:Key="CollectionViewSource" />
-  </UserControl.Resources>
+    <UserControl.Resources>
+        <CollectionViewSource x:Name="CollectionViewSource" x:Key="CollectionViewSource" />
+    </UserControl.Resources>
 
-  <!-- Page Content -->
+    <!-- Page Content -->
 
-  <Grid x:Name="LayoutRoot" Style="{StaticResource LayoutRootGridStyle}">
-    <VisualStateManager.VisualStateGroups>
-      <VisualStateGroup x:Name="OrientationStates">
-        <VisualState x:Name="Full"/>
-        <VisualState x:Name="Fill"/>
-        <VisualState x:Name="Portrait">
-          <Storyboard>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ItemGridView" Storyboard.TargetProperty="Visibility" >
-              <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ItemListView" Storyboard.TargetProperty="Visibility" >
-              <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
-            </ObjectAnimationUsingKeyFrames>
-          </Storyboard>
-        </VisualState>
-        <VisualState x:Name="Snapped">
-          <Storyboard>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Style" Storyboard.TargetName="BackButton">
-              <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnapBackButtonStyle}"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Style" Storyboard.TargetName="PageTitle">
-              <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnapPageTitleStyle}"/>
-            </ObjectAnimationUsingKeyFrames>
+    <Grid x:Name="LayoutRoot" Style="{StaticResource LayoutRootGridStyle}">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="OrientationStates">
+                <VisualState x:Name="Full"/>
+                <VisualState x:Name="Fill"/>
+                <VisualState x:Name="Portrait">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ItemGridView" Storyboard.TargetProperty="Visibility" >
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ItemListView" Storyboard.TargetProperty="Visibility" >
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Snapped">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Style" Storyboard.TargetName="BackButton">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnapBackButtonStyle}"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Style" Storyboard.TargetName="PageTitle">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnapPageTitleStyle}"/>
+                        </ObjectAnimationUsingKeyFrames>
 
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="ItemTemplate" Storyboard.TargetName="ItemListView">
-              <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnapListItemTemplate}"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="ItemsPanel" Storyboard.TargetName="ItemListView">
-              <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnapListItemsPanelTemplate}"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ItemGridView" Storyboard.TargetProperty="Visibility" >
-              <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ItemListView" Storyboard.TargetProperty="Visibility" >
-              <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
-            </ObjectAnimationUsingKeyFrames>
-          </Storyboard>
-        </VisualState>
-      </VisualStateGroup>
-    </VisualStateManager.VisualStateGroups>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="ItemTemplate" Storyboard.TargetName="ItemListView">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnapListItemTemplate}"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="ItemsPanel" Storyboard.TargetName="ItemListView">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnapListItemsPanelTemplate}"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ItemGridView" Storyboard.TargetProperty="Visibility" >
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ItemListView" Storyboard.TargetProperty="Visibility" >
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
 
-    <Grid.RowDefinitions>
-      <RowDefinition Height="140"/>
-      <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="140"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-    <Grid>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="Auto" />
-        <ColumnDefinition Width="*" />
-      </Grid.ColumnDefinitions>
-      <Button x:Name="BackButton" Style="{StaticResource BackButtonStyle}"/>
-      <TextBlock x:Name="PageTitle" Text="{StaticResource AppName}" Style="{StaticResource PageTitleStyle}" Grid.Column="1" />
-    </Grid>
+        <Grid PointerPressed="Grid_PointerPressed">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="BackButton" Style="{StaticResource BackButtonStyle}"/>
+            <TextBlock x:Name="PageTitle" Text="{StaticResource AppName}" Style="{StaticResource PageTitleStyle}" Grid.Column="1" />
+            <ApplicationBar VerticalAlignment="Bottom" DismissMode="LightDismiss" Background="#9BBBDB" Grid.Row="1">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="30,0,30,0">
+                    <StackPanel Orientation="Vertical" Margin="0,14,20,5">
+                        <Button x:Name="btnSettings" Click="btnSettings_Click" FontFamily="Segoe UI Symbol" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4,0,0,0" Style="{StaticResource HomeButtonStyle}" Content="&#xE0C2;" />
+                        <TextBlock HorizontalAlignment="Center" FontFamily="Segoe UI" FontSize="14" Text="Settings" Foreground="White" />
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="0,14,20,5">
+                        <Button x:Name="btnHome" IsEnabled="False" FontFamily="Segoe UI Symbol" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4,0,0,0" Style="{StaticResource HomeButtonStyle}" Content="&#xE10F;" />
+                        <TextBlock HorizontalAlignment="Center" FontFamily="Segoe UI" FontSize="14" Text="Home" Foreground="#7F8D8D8D" />
+                    </StackPanel>
+                </StackPanel>
+            </ApplicationBar>
+            <local:AccountSettingsPanel x:Name="AccountSettings" HorizontalAlignment="Right" Margin="0,0,-346,0">
+                <local:AccountSettingsPanel.Transitions>
+                    <RepositionThemeTransition />
+                </local:AccountSettingsPanel.Transitions>
+            </local:AccountSettingsPanel>
+        </Grid>
 
-    <GridView x:Name="ItemGridView" ItemsSource="{Binding Source={StaticResource CollectionViewSource}}" ItemTemplate="{StaticResource GroupedItemTemplate}" ItemContainerStyle="{StaticResource GridTileStyle}" ItemsPanel="{StaticResource GridItemsPanelTemplate}"
+        <GridView x:Name="ItemGridView" ItemsSource="{Binding Source={StaticResource CollectionViewSource}}" ItemTemplate="{StaticResource GroupedItemTemplate}" ItemContainerStyle="{StaticResource GridTileStyle}" ItemsPanel="{StaticResource GridItemsPanelTemplate}"
               Grid.Row="1" Background="{StaticResource PageBackgroundBrush}" BorderThickness="0" VerticalAlignment="Stretch"
-              SelectionChanged="ItemView_SelectionChanged"/>
-    <ListView x:Name="ItemListView" ItemsSource="{Binding Source={StaticResource CollectionViewSource}}" ItemTemplate="{StaticResource PortraitListItemTemplate}" ItemContainerStyle="{StaticResource ListTileStyle}"  ItemsPanel="{StaticResource PortraitListItemsPanelTemplate}"
+              SelectionChanged="ItemView_SelectionChanged" />
+        <ListView x:Name="ItemListView" ItemsSource="{Binding Source={StaticResource CollectionViewSource}}" ItemTemplate="{StaticResource PortraitListItemTemplate}" ItemContainerStyle="{StaticResource ListTileStyle}"  ItemsPanel="{StaticResource PortraitListItemsPanelTemplate}"
               Visibility="Collapsed" Grid.Row="1" Background="{StaticResource PageBackgroundBrush}" BorderThickness="0" VerticalAlignment="Stretch"
               SelectionChanged="ItemView_SelectionChanged"/>
-        <ApplicationBar VerticalAlignment="Bottom" DismissMode="LightDismiss" Background="#9BBBDB" Grid.Row="1">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="30,0,30,0">
-                <StackPanel Orientation="Vertical" Margin="0,14,20,5">
-                    <Button x:Name="btnSettings" Click="btnSettings_Click" FontFamily="Segoe UI Symbol" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4,0,0,0" Style="{StaticResource HomeButtonStyle}" Content="&#xE0C2;" />
-                    <TextBlock HorizontalAlignment="Center" FontFamily="Segoe UI" FontSize="14" Text="Settings" Foreground="White" />
-                </StackPanel>
-                <StackPanel Orientation="Vertical" Margin="0,14,20,5">
-                    <Button x:Name="btnHome" IsEnabled="False" FontFamily="Segoe UI Symbol" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4,0,0,0" Style="{StaticResource HomeButtonStyle}" Content="&#xE10F;" />
-                    <TextBlock HorizontalAlignment="Center" FontFamily="Segoe UI" FontSize="14" Text="Home" Foreground="#7F8D8D8D" />
-                </StackPanel>
-            </StackPanel>
-        </ApplicationBar>
+
     </Grid>
 
 </UserControl>

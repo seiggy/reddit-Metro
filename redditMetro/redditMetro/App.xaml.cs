@@ -51,8 +51,8 @@ namespace redditMetro
         public static void ShowCollection()
         {
             var page = new CollectionPage();
-            if (_sampleData == null) _sampleData = new SampleDataSource(page.BaseUri);
-            page.Items = _sampleData.GroupedCollections.Select((obj) => (Object)obj);
+            //if (_sampleData == null) _sampleData = new SampleDataSource(page.BaseUri);
+            //page.Items = _sampleData.GroupedCollections.Select((obj) => (Object)obj);
             Window.Current.Content = page;
         }
 

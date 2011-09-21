@@ -14,7 +14,7 @@
 
     <!-- Page Content -->
 
-    <Grid x:Name="LayoutRoot" Style="{StaticResource LayoutRootGridStyle}">
+    <Grid x:Name="LayoutRoot" Style="{StaticResource LayoutRootGridStyle}" PointerPressed="Grid_PointerPressed">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="OrientationStates">
                 <VisualState x:Name="Full"/>
@@ -60,30 +60,13 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid PointerPressed="Grid_PointerPressed">
+        <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Button x:Name="BackButton" Style="{StaticResource BackButtonStyle}"/>
             <TextBlock x:Name="PageTitle" Text="{StaticResource AppName}" Style="{StaticResource PageTitleStyle}" Grid.Column="1" />
-            <ApplicationBar VerticalAlignment="Bottom" DismissMode="LightDismiss" Background="#9BBBDB" Grid.Row="1">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="30,0,30,0">
-                    <StackPanel Orientation="Vertical" Margin="0,14,20,5">
-                        <Button x:Name="btnSettings" Click="btnSettings_Click" FontFamily="Segoe UI Symbol" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4,0,0,0" Style="{StaticResource HomeButtonStyle}" Content="&#xE0C2;" />
-                        <TextBlock HorizontalAlignment="Center" FontFamily="Segoe UI" FontSize="14" Text="Settings" Foreground="White" />
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical" Margin="0,14,20,5">
-                        <Button x:Name="btnHome" IsEnabled="False" FontFamily="Segoe UI Symbol" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4,0,0,0" Style="{StaticResource HomeButtonStyle}" Content="&#xE10F;" />
-                        <TextBlock HorizontalAlignment="Center" FontFamily="Segoe UI" FontSize="14" Text="Home" Foreground="#7F8D8D8D" />
-                    </StackPanel>
-                </StackPanel>
-            </ApplicationBar>
-            <local:AccountSettingsPanel x:Name="AccountSettings" HorizontalAlignment="Right" Margin="0,0,-346,0">
-                <local:AccountSettingsPanel.Transitions>
-                    <RepositionThemeTransition />
-                </local:AccountSettingsPanel.Transitions>
-            </local:AccountSettingsPanel>
         </Grid>
 
         <GridView x:Name="ItemGridView" ItemsSource="{Binding Source={StaticResource CollectionViewSource}}" ItemTemplate="{StaticResource GroupedItemTemplate}" ItemContainerStyle="{StaticResource GridTileStyle}" ItemsPanel="{StaticResource GridItemsPanelTemplate}"
@@ -92,7 +75,25 @@
         <ListView x:Name="ItemListView" ItemsSource="{Binding Source={StaticResource CollectionViewSource}}" ItemTemplate="{StaticResource PortraitListItemTemplate}" ItemContainerStyle="{StaticResource ListTileStyle}"  ItemsPanel="{StaticResource PortraitListItemsPanelTemplate}"
               Visibility="Collapsed" Grid.Row="1" Background="{StaticResource PageBackgroundBrush}" BorderThickness="0" VerticalAlignment="Stretch"
               SelectionChanged="ItemView_SelectionChanged"/>
-
+        <ApplicationBar VerticalAlignment="Bottom" DismissMode="LightDismiss" Background="#9BBBDB" Grid.Row="1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="30,0,30,0">
+                <StackPanel Orientation="Vertical" Margin="0,14,20,5">
+                    <Button x:Name="btnSettings" Click="btnSettings_Click" FontFamily="Segoe UI Symbol" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4,0,0,0" Style="{StaticResource HomeButtonStyle}" Content="&#xE0C2;" />
+                    <TextBlock HorizontalAlignment="Center" FontFamily="Segoe UI" FontSize="14" Text="Settings" Foreground="White" />
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="0,14,20,5">
+                    <Button x:Name="btnHome" IsEnabled="False" FontFamily="Segoe UI Symbol" FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="4,0,0,0" Style="{StaticResource HomeButtonStyle}" Content="&#xE10F;" />
+                    <TextBlock HorizontalAlignment="Center" FontFamily="Segoe UI" FontSize="14" Text="Home" Foreground="#7F8D8D8D" />
+                </StackPanel>
+            </StackPanel>
+        </ApplicationBar>
+        <local:AccountSettingsPanel x:Name="accountSettings" Grid.RowSpan="2" HorizontalAlignment="Right" Margin="0,0,-346,0">
+            <local:AccountSettingsPanel.Transitions>
+                <TransitionCollection>
+                    <RepositionThemeTransition />
+                </TransitionCollection>
+            </local:AccountSettingsPanel.Transitions>
+        </local:AccountSettingsPanel>
     </Grid>
 
 </UserControl>

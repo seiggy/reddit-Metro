@@ -5,10 +5,27 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     d:DesignHeight="1080" d:DesignWidth="346">
-    
-    <Grid x:Name="LayoutRoot" Background="#FF0C0C0C">
-        <StackPanel Orientation="Vertical">
-            
+
+    <Grid x:Name="LayoutRoot" Background="#9BBBDB" Width="346">
+        <StackPanel Orientation="Vertical" Margin="20">
+            <TextBlock FontSize="24" FontFamily="Segoe UI" Text="Account Settings" />
+            <StackPanel Orientation="Horizontal" Margin="0, 15, 0, 15">
+                <Border Background="#CEE3F8" Width="75" Height="75">
+                    <Image Source="Images/logo.56x56.png" Height="56" Width="56" />
+                </Border>
+                <StackPanel Orientation="Vertical" Margin="10,0,0,0">
+                    <TextBlock FontSize="16" FontFamily="Segoe UI" Text="reddit metro" />
+                    <TextBlock FontSize="10" FontFamily="Segoe UI" Text="a open source project" />
+                </StackPanel>
+            </StackPanel>
+            <TextBlock FontSize="18" FontFamily="Segoe UI" Text="Username" />
+            <TextBox x:Name="txtUsername" Margin="0, 0, 80, 0" />
+            <TextBlock FontSize="18" FontFamily="Segoe UI" Text="Password" Margin="0,20,0,0" />
+            <PasswordBox x:Name="txtPassword" Margin="0,0,80,0" />
+            <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
+                <TextBlock FontSize="18" FontFamily="Segoe UI" Margin="0,5,0,0" Text="Save My Password" />
+                <ToggleSwitch x:Name="tglSavePassword" IsOn="False" Width="120" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>

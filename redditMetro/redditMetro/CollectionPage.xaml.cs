@@ -80,15 +80,15 @@ namespace redditMetro
 
             SettingsPane settingsPane = SettingsPane.GetForCurrentView();
             
-            //if(settingsPane.ApplicationCommands.Count == 0)
-            //    settingsPane.ApplicationCommands.Add(new SettingsCommand(KnownSettingsCommand.Account, new UICommandInvokedHandler(AccountCommandHandler)));
+            if(settingsPane.ApplicationCommands.Count == 0)
+                settingsPane.ApplicationCommands.Add(new SettingsCommand(KnownSettingsCommand.Account, new UICommandInvokedHandler(AccountCommandHandler)));
             
             SetCurrentViewState(this);
         }
 
         public void AccountCommandHandler(IUICommand command)
         {
-            AccountSettings.Margin = ThicknessHelper.FromUniformLength(0);
+            accountSettings.Margin = ThicknessHelper.FromUniformLength(0);
         }
 
         private void LoadCollection(HttpContent messageTask)
@@ -181,8 +181,8 @@ namespace redditMetro
 
         private void Grid_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerEventArgs e)
         {
-            if (AccountSettings.Margin.Right == 0)
-                AccountSettings.Margin = ThicknessHelper.FromLengths(0, 0, -346, 0);
+            if (accountSettings.Margin.Right == 0)
+                accountSettings.Margin = ThicknessHelper.FromLengths(0, 0, -346, 0);
         }
     }
 }

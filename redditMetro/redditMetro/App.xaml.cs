@@ -41,7 +41,7 @@ namespace redditMetro
             InitializeComponent();
         }
 
-        public static void LoadSettings()
+        public async static void LoadSettings()
         {
             //PasswordCredential cred = new PasswordCredential("redditMetro", Settings["UserName"].ToString(), Settings["Password"].ToString());
             PasswordVault = new PasswordVault();
@@ -56,7 +56,7 @@ namespace redditMetro
 
             if (!String.IsNullOrEmpty(Settings["UserName"].ToString()) && (bool)Settings["SavePassword"])
             {
-                LoginReddit();
+                await Task.Run(() => { LoginReddit(); });
             }
             else
             {
@@ -75,8 +75,8 @@ namespace redditMetro
         public static void ShowCollection()
         {
             var page = new CollectionPage();
-            //if (_sampleData == null) _sampleData = new SampleDataSource(page.BaseUri);
-            //page.Items = _sampleData.GroupedCollections.Select((obj) => (Object)obj);
+            if (_sampleData == null) _sampleData = new SampleDataSource(page.BaseUri);
+            page.Items = _sampleData.GroupedCollections.Select((obj) => (Object)obj);
             Window.Current.Content = page;
         }
 
@@ -117,7 +117,7 @@ namespace redditMetro
             }
         }
 
-        private static void LoginReddit()
+        private async static void LoginReddit()
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri("http://www.reddit.com/api/");
@@ -139,7 +139,7 @@ namespace redditMetro
 
             FormUrlEncodedContent content = new FormUrlEncodedContent(values);
 
-            var response = client.PostAsync("login/" + Settings["UserName"].ToString(), content).Result;
+            var response = await client.PostAsync("login/" + Settings["UserName"].ToString(), content);
             var stream = response.EnsureSuccessStatusCode().Content.ContentReadStream;
             DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(LoginResponse));
             var data = (LoginResponse)deserializer.ReadObject(stream);

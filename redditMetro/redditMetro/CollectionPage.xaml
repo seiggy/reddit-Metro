@@ -70,7 +70,7 @@
         </Grid>
 
         <GridView x:Name="ItemGridView" ItemsSource="{Binding Source={StaticResource CollectionViewSource}}" ItemTemplate="{StaticResource GroupedItemTemplate}" ItemContainerStyle="{StaticResource GridTileStyle}" ItemsPanel="{StaticResource GridItemsPanelTemplate}"
-              Grid.Row="1" Background="{StaticResource PageBackgroundBrush}" BorderThickness="0" VerticalAlignment="Stretch"
+              Grid.Row="1" Background="{StaticResource PageBackgroundBrush}" BorderThickness="0" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollMode="Enabled" ScrollViewer.HorizontalScrollBarVisibility="Auto"
               SelectionChanged="ItemView_SelectionChanged" />
         <ListView x:Name="ItemListView" ItemsSource="{Binding Source={StaticResource CollectionViewSource}}" ItemTemplate="{StaticResource PortraitListItemTemplate}" ItemContainerStyle="{StaticResource ListTileStyle}"  ItemsPanel="{StaticResource PortraitListItemsPanelTemplate}"
               Visibility="Collapsed" Grid.Row="1" Background="{StaticResource PageBackgroundBrush}" BorderThickness="0" VerticalAlignment="Stretch"

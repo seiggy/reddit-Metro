@@ -29,7 +29,6 @@ namespace redditMetro
         {
             InitializeComponent();
             BackButton.IsEnabled = false;
-            App.SearchPane = SearchPane.GetForCurrentView();
         }
 
         void ItemView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -39,6 +38,7 @@ namespace redditMetro
             var subreddit = (sender as Selector).SelectedItem as Subreddit;
             App.SelectedSubreddit = subreddit;
             App.ShowSplit(selectedItem);
+            
         }
 
         private IEnumerable<Object> _items;
@@ -73,6 +73,7 @@ namespace redditMetro
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            App.SearchPane = SearchPane.GetForCurrentView();
             if (_displayHandler == null)
             {
                 _displayHandler = Page_OrientationChanged;
@@ -83,6 +84,7 @@ namespace redditMetro
 
             if (App.Subreddits == null || App.Subreddits.Count == 0)
             {
+                App.Subreddits = new List<Subreddit>();
                 if (App.isLoggedIn)
                 {
                     try
@@ -114,6 +116,7 @@ namespace redditMetro
             else
             {
                 CollectionViewSource.Source = App.Subreddits;
+                this.UpdateLayout();
             }
 
             SettingsPane settingsPane = SettingsPane.GetForCurrentView();
@@ -181,14 +184,45 @@ namespace redditMetro
                 else
                     r.data.image = "/Images/reddit.com.header.png";
             }
-            App.Subreddits = data.data.children;
-            
-            // we're off the main UI thread now, so we need to invoke back to the UI thread to modify the CollectionViewSource
-            Dispatcher.Invoke(Windows.UI.Core.CoreDispatcherPriority.Normal, (x, y) =>
-                {
-                    CollectionViewSource.Source = data.data.children;
-                }, this, null);
+            App.Subreddits.AddRange(data.data.children);
+
+            if (data.data.after != null && App.isLoggedIn)
+            {
+                Task.Run(() =>
+                    {
+                        var request = (HttpWebRequest)WebRequest.Create("http://www.reddit.com/reddits/mine.json?after=" + data.data.after);
+                        request.CookieContainer = new CookieContainer();
+
+                        Cookie c = new Cookie("reddit_session", App.cookie.Replace(",", "%2C"));
+                        request.CookieContainer.Add(new Uri("http://www.reddit.com"), c);
+
+                        RequestState rs = new RequestState();
+                        rs.Request = request;
+
+                        var response = request.BeginGetResponse(new AsyncCallback(ExtraReddits), rs);
+                    });
+            }
+            else
+            {
+                // don't bind the collection till we have all the items...weird behavior otherwise
+                // we're off the main UI thread now, so we need to invoke back to the UI thread to modify the CollectionViewSource
+                Dispatcher.Invoke(Windows.UI.Core.CoreDispatcherPriority.Normal, (x, y) =>
+                    {
+                        CollectionViewSource.Source = App.Subreddits;
+                        this.UpdateLayout();
+                    }, this, null);
+            }
             //CollectionViewSource.Source = data.data.children;
+        }
+
+        private void ExtraReddits(IAsyncResult ar)
+        {
+            RequestState rs = (RequestState)ar.AsyncState;
+            WebRequest req = rs.Request;
+            WebResponse response = req.EndGetResponse(ar);
+            Stream responseStream = response.GetResponseStream();
+            rs.ResponseStream = responseStream;
+            LoadCollection(responseStream);
         }
         
         private void LoadCollection(HttpContent messageTask)
@@ -198,6 +232,7 @@ namespace redditMetro
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
+
             DisplayProperties.OrientationChanged -= _displayHandler;
             ApplicationLayout.GetForCurrentView().LayoutChanged -= _layoutHandler;
         }
@@ -309,6 +344,7 @@ namespace redditMetro
                     App.modhash = data.json.data.modhash;
                     App.cookie = data.json.data.cookie;
                     App.isLoggedIn = true;
+                    App.Subreddits = new List<Subreddit>();
                     App.Settings["UserName"] = accountSettings.UserName;
                     if (accountSettings.SavePassword)
                     {

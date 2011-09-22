@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
+using System.Threading.Tasks;
 using redditMetro.Models;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Search;
@@ -117,15 +118,7 @@ namespace redditMetro
 
         void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            if (this.IsSnappedOrPortrait() && ItemListView.SelectedItem != null)
-            {
-                ItemListView.SelectedItem = null;
-            }
-            else
-            {
-                // Construct the appropriate destination page and set its context appropriately
-                App.ShowCollection();
-            }
+            App.ShowCollection();
         }
 
         private Object _context;

@@ -13,36 +13,14 @@ namespace redditMetro.Controls
     {
         public AccountSettingsPanel()
         {
-            this.DataContext = this;
-            UserName = (string)App.Settings["UserName"];
-            //Password = (string)App.Settings["Password"]; // no longer using this way, using passwordvault instead
-            try
-            {
-                var passwords = App.PasswordVault.FindAllByResource("redditMetro");
-                foreach (var pass in passwords)
-                {
-                    if (pass.UserName == UserName)
-                    {
-                        pass.RetrievePassword();
-                        Password = pass.Password;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // means we don't have a password, ignore this error
-                Password = "";
-            }
-            SavePassword = (bool)App.Settings["SavePassword"];
-            
-            ErrorMessage = "";
             InitializeComponent();
+            this.DataContext = this;
         }
 
-        public string UserName { get; set; }
-        public string Password { get; set; }
-        public bool SavePassword { get; set; }
-        public string ErrorMessage { get; set; }
+        public string UserName = "";
+        public string Password = "";
+        public bool SavePassword = false;
+        public string ErrorMessage = "";
 
         private void txtUsername_LostFocus(object sender, RoutedEventArgs e)
         {
@@ -63,6 +41,27 @@ namespace redditMetro.Controls
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            UserName = (string)App.Settings["UserName"];
+            //Password = (string)App.Settings["Password"]; // no longer using this way, using passwordvault instead
+            try
+            {
+                var passwords = App.PasswordVault.FindAllByResource("redditMetro");
+                foreach (var pass in passwords)
+                {
+                    if (pass.UserName == UserName)
+                    {
+                        pass.RetrievePassword();
+                        Password = pass.Password;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // means we don't have a password, ignore this error
+            }
+            SavePassword = (bool)App.Settings["SavePassword"];
+
+            ErrorMessage = "";
             txtUsername.Text = UserName;
             txtPassword.Password = Password;
             tglSavePassword.IsOn = SavePassword;

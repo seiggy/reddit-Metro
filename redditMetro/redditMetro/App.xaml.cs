@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Search;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
+using Windows.Security.Credentials;
 
 namespace redditMetro
 {
@@ -33,6 +34,7 @@ namespace redditMetro
         public static string modhash { get; set; }
         public static string cookie { get; set; }
         public static bool isLoggedIn { get; set; }
+        public static PasswordVault PasswordVault { get; set; }
 
         public App()
         {
@@ -41,19 +43,24 @@ namespace redditMetro
 
         public static void LoadSettings()
         {
+            //PasswordCredential cred = new PasswordCredential("redditMetro", Settings["UserName"].ToString(), Settings["Password"].ToString());
+            PasswordVault = new PasswordVault();
+            
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             var container = localSettings.CreateContainer(CONTAINER_NAME, ApplicationDataCreateDisposition.Always);
             Settings = container.Values;
             if (!Settings.ContainsKey("UserName"))
                 Settings.Add("UserName", "");
-            if (!Settings.ContainsKey("Password"))
-                Settings.Add("Password", "");
             if (!Settings.ContainsKey("SavePassword"))
                 Settings.Add("SavePassword", false);
 
-            if (!String.IsNullOrEmpty(Settings["UserName"].ToString()) && !String.IsNullOrEmpty(Settings["Password"].ToString()))
+            if (!String.IsNullOrEmpty(Settings["UserName"].ToString()) && (bool)Settings["SavePassword"])
             {
                 LoginReddit();
+            }
+            else
+            {
+                isLoggedIn = false;
             }
         }
 
@@ -99,11 +106,14 @@ namespace redditMetro
 
             if (Window.Current.Content == null)
             {
-                var page = new SplitPage();
-                page.Items = null;
-                page.Context = null;
-                Window.Current.Content = page;
-                Window.Current.Activate();
+                await Task.Run(() =>
+                    {
+                        var page = new SplitPage();
+                        page.Items = null;
+                        page.Context = null;
+                        Window.Current.Content = page;
+                        Window.Current.Activate();
+                    });
             }
         }
 
@@ -115,7 +125,17 @@ namespace redditMetro
             Dictionary<string, string> values = new Dictionary<string, string>();
             values.Add("api_type", "json");
             values.Add("user", Settings["UserName"].ToString());
-            values.Add("passwd", Settings["Password"].ToString());
+            var passwords = PasswordVault.FindAllByResource("redditMetro");
+
+            foreach (var pass in passwords)
+            {
+                if (pass.UserName == Settings["UserName"].ToString())
+                {
+                    pass.RetrievePassword();
+                    values.Add("passwd", pass.Password);
+                    break;
+                }
+            }
 
             FormUrlEncodedContent content = new FormUrlEncodedContent(values);
 
@@ -134,7 +154,12 @@ namespace redditMetro
                 // password was probably bad, so we'll set it back to ""
                 App.isLoggedIn = false;
                 Settings["Password"] = "";
-                
+                var passes = PasswordVault.FindAllByResource("redditMetro");
+                foreach (var i in passes)
+                {
+                    if (i.UserName == Settings["UserName"].ToString())
+                        PasswordVault.Remove(i);
+                }
             }
         }
     }

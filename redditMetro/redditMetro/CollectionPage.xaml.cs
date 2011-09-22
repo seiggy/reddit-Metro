@@ -11,6 +11,7 @@ using Windows.ApplicationModel.Search;
 using Windows.Data.Json;
 using Windows.Foundation;
 using Windows.Graphics.Display;
+using Windows.Security.Credentials;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Core;
 using Windows.UI.Popups;
@@ -98,7 +99,7 @@ namespace redditMetro
                         var response = request.BeginGetResponse(new AsyncCallback(RespCallback), rs);
                         //LoadCollection(response);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
 
                     }
@@ -130,8 +131,12 @@ namespace redditMetro
 
         private async void LoadCollection(Stream contentStream)
         {
-            DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(SubredditResponse));
-            var data = (SubredditResponse)deserializer.ReadObject(contentStream);
+            SubredditResponse data = new SubredditResponse();
+            await Task.Run(() =>
+                {
+                    DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(SubredditResponse));
+                    data = (SubredditResponse)deserializer.ReadObject(contentStream);
+                });
 
             foreach (Subreddit r in data.data.children)
             {
@@ -177,7 +182,8 @@ namespace redditMetro
                     r.data.image = "/Images/reddit.com.header.png";
             }
             App.Subreddits = data.data.children;
-
+            
+            // we're off the main UI thread now, so we need to invoke back to the UI thread to modify the CollectionViewSource
             Dispatcher.Invoke(Windows.UI.Core.CoreDispatcherPriority.Normal, (x, y) =>
                 {
                     CollectionViewSource.Source = data.data.children;
@@ -227,26 +233,60 @@ namespace redditMetro
             Windows.UI.ApplicationSettings.SettingsPane.Show();
         }
 
-        private void Grid_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerEventArgs e)
+        private async void Grid_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerEventArgs e)
         {
             if (accountSettings.Margin.Right == 0)
             {
                 accountSettings.Margin = ThicknessHelper.FromLengths(0, 0, -346, 0);
                 App.Settings["UserName"] = accountSettings.UserName;
-
-                if (accountSettings.SavePassword)
-                    App.Settings["Password"] = accountSettings.Password;
-                else
-                    App.Settings["Password"] = "";
-
+                
                 if (accountSettings.UserName.Length > 0 && accountSettings.Password.Length > 0 && !App.isLoggedIn)
                 {
-                    LoginReddit();
+                    await LoginReddit();
+                    //App.ShowCollection();
+                    try
+                    {
+                        var request = (HttpWebRequest)WebRequest.Create("http://www.reddit.com/reddits/mine.json");
+                        request.CookieContainer = new CookieContainer();
+
+                        Cookie c = new Cookie("reddit_session", App.cookie.Replace(",", "%2C"));
+                        request.CookieContainer.Add(new Uri("http://www.reddit.com"), c);
+
+                        RequestState rs = new RequestState();
+                        rs.Request = request;
+
+                        var response = request.BeginGetResponse(new AsyncCallback(RespCallback), rs);
+                        //LoadCollection(response);
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+                else if (!accountSettings.SavePassword)
+                {
+                    App.Settings["SavePassword"] = false;
+                    Task.Run(() =>
+                        {
+                            try
+                            {
+                                var passwords = App.PasswordVault.FindAllByResource("redditMetro");
+                                foreach (var pass in passwords)
+                                {
+                                    if (pass.UserName == accountSettings.UserName)
+                                        App.PasswordVault.Remove(pass);
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                //user doesn't have a password stored, ignore
+                            }
+                        });
                 }
             }
         }
 
-        private async void LoginReddit()
+        private async Task LoginReddit()
         {
             try
             {
@@ -272,8 +312,49 @@ namespace redditMetro
                     App.Settings["UserName"] = accountSettings.UserName;
                     if (accountSettings.SavePassword)
                     {
-                        App.Settings["Password"] = accountSettings.Password;
+                        bool passwordSet = false;
+                        try
+                        {
+                            var passwords = App.PasswordVault.FindAllByResource("redditMetro");
+
+                            // check and see if the user's password is already stored, if it is, lets update the password
+                            foreach (var pass in passwords)
+                            {
+                                if (pass.UserName == accountSettings.UserName)
+                                {
+                                    pass.Password = accountSettings.Password;
+                                    passwordSet = true;
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            // user hasn't logged in before...ignore exception and store the password
+                        }
+
+                        // new user, so we'll add a new password cred to the store
+                        if (!passwordSet)
+                        {
+                            App.PasswordVault.Add(new PasswordCredential("redditMetro", accountSettings.UserName, accountSettings.Password));
+                        }
                         App.Settings["SavePassword"] = accountSettings.SavePassword;
+                    }
+                    else
+                    {
+                        // user no longer wants us to store their password, so we remove it from the password vault
+                        try
+                        {
+                            var passwords = App.PasswordVault.FindAllByResource("redditMetro");
+                            foreach (var pass in passwords)
+                            {
+                                if (pass.UserName == accountSettings.UserName)
+                                    App.PasswordVault.Remove(pass);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            //user doesn't have a password stored, ignore
+                        }
                     }
                 }
                 else
@@ -285,7 +366,7 @@ namespace redditMetro
                     accountSettings.Margin = ThicknessHelper.FromUniformLength(0);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // help!
             }

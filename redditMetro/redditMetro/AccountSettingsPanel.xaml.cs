@@ -15,7 +15,24 @@ namespace redditMetro.Controls
         {
             this.DataContext = this;
             UserName = (string)App.Settings["UserName"];
-            Password = (string)App.Settings["Password"];
+            //Password = (string)App.Settings["Password"]; // no longer using this way, using passwordvault instead
+            try
+            {
+                var passwords = App.PasswordVault.FindAllByResource("redditMetro");
+                foreach (var pass in passwords)
+                {
+                    if (pass.UserName == UserName)
+                    {
+                        pass.RetrievePassword();
+                        Password = pass.Password;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // means we don't have a password, ignore this error
+                Password = "";
+            }
             SavePassword = (bool)App.Settings["SavePassword"];
             
             ErrorMessage = "";
@@ -49,6 +66,17 @@ namespace redditMetro.Controls
             txtUsername.Text = UserName;
             txtPassword.Password = Password;
             tglSavePassword.IsOn = SavePassword;
+        }
+
+        private void tglSavePassword_Toggled(object sender, RoutedEventArgs e)
+        {
+            SavePassword = tglSavePassword.IsOn;
+        }
+
+        // Hate that we have to do this, but LostFocus isn't called on a soft-dismiss :(
+        private void txtPassword_KeyUp(object sender, Windows.UI.Xaml.Input.KeyEventArgs e)
+        {
+            Password = txtPassword.Password;
         }
     }
 }

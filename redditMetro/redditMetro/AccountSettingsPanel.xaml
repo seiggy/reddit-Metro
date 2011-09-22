@@ -22,10 +22,10 @@
             <TextBlock FontSize="18" FontFamily="Segoe UI" Text="Username" />
             <TextBox x:Name="txtUsername" Margin="0, 0, 80, 0" Text="{Binding UserName}" LostFocus="txtUsername_LostFocus" />
             <TextBlock FontSize="18" FontFamily="Segoe UI" Text="Password" Margin="0,20,0,0" />
-            <PasswordBox x:Name="txtPassword" Margin="0,0,80,0" Password="{Binding Password}" LostFocus="txtPassword_LostFocus" />
+            <PasswordBox x:Name="txtPassword" Margin="0,0,80,0" Password="{Binding Password}" LostFocus="txtPassword_LostFocus" KeyUp="txtPassword_KeyUp" />
             <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
                 <TextBlock FontSize="18" FontFamily="Segoe UI" Margin="0,5,0,0" Text="Save My Password" />
-                <ToggleSwitch x:Name="tglSavePassword" IsOn="{Binding SavePassword}" Width="120" LostFocus="tglSavePassword_LostFocus" />
+                <ToggleSwitch x:Name="tglSavePassword" IsOn="{Binding SavePassword}" Width="120" LostFocus="tglSavePassword_LostFocus" Toggled="tglSavePassword_Toggled" />
             </StackPanel>
             <TextBlock FontSize="18" FontFamily="Segoe UI" Text="{Binding ErrorMessage}" />
         </StackPanel>

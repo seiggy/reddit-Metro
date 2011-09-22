@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
 using System.Threading.Tasks;
@@ -182,7 +183,65 @@ namespace redditMetro
         private void Grid_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerEventArgs e)
         {
             if (accountSettings.Margin.Right == 0)
+            {
                 accountSettings.Margin = ThicknessHelper.FromLengths(0, 0, -346, 0);
+                App.Settings["UserName"] = accountSettings.UserName;
+
+                if (accountSettings.SavePassword)
+                    App.Settings["Password"] = accountSettings.Password;
+                else
+                    App.Settings["Password"] = "";
+
+                if (accountSettings.UserName.Length > 0 && accountSettings.Password.Length > 0 && !App.isLoggedIn)
+                {
+                    LoginReddit();
+                }
+            }
+        }
+
+        private async void LoginReddit()
+        {
+            try
+            {
+                var client = new HttpClient();
+                client.BaseAddress = new Uri("http://www.reddit.com/api/");
+
+                Dictionary<string, string> values = new Dictionary<string, string>();
+                values.Add("api_type", "json");
+                values.Add("user", accountSettings.UserName);
+                values.Add("passwd", accountSettings.Password);
+
+                FormUrlEncodedContent content = new FormUrlEncodedContent(values);
+
+                var response = await client.PostAsync("login/" + accountSettings.UserName, content);
+                var stream = response.EnsureSuccessStatusCode().Content.ContentReadStream;
+                DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(LoginResponse));
+                var data = (LoginResponse)deserializer.ReadObject(stream);
+                if (data.json.errors.Count == 0)
+                {
+                    App.modhash = data.json.data.modhash;
+                    App.cookie = data.json.data.cookie;
+                    App.isLoggedIn = true;
+                    App.Settings["UserName"] = accountSettings.UserName;
+                    if (accountSettings.SavePassword)
+                    {
+                        App.Settings["Password"] = accountSettings.Password;
+                        App.Settings["SavePassword"] = accountSettings.SavePassword;
+                    }
+                }
+                else
+                {
+                    foreach (string s in data.json.errors)
+                    {
+                        accountSettings.ErrorMessage += s + ". ";
+                    }
+                    accountSettings.Margin = ThicknessHelper.FromUniformLength(0);
+                }
+            }
+            catch (Exception e)
+            {
+                // help!
+            }
         }
     }
 }

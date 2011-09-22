@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
@@ -11,6 +12,7 @@ using Windows.Data.Json;
 using Windows.Foundation;
 using Windows.Graphics.Display;
 using Windows.UI.ApplicationSettings;
+using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -58,6 +60,16 @@ namespace redditMetro
         private DisplayPropertiesEventHandler _displayHandler;
         private TypedEventHandler<ApplicationLayout, ApplicationLayoutChangedEventArgs> _layoutHandler;
 
+        private void RespCallback(IAsyncResult ar)
+        {
+            RequestState rs = (RequestState)ar.AsyncState;
+            WebRequest req = rs.Request;
+            WebResponse response = req.EndGetResponse(ar);
+            Stream responseStream = response.GetResponseStream();
+            rs.ResponseStream = responseStream;
+            LoadCollection(responseStream);
+        }
+
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             if (_displayHandler == null)
@@ -70,9 +82,33 @@ namespace redditMetro
 
             if (App.Subreddits == null || App.Subreddits.Count == 0)
             {
-                var client = new HttpClient();
-                var response = client.GetAsync("http://www.reddit.com/reddits.json").Result.Content;
-                LoadCollection(response);
+                if (App.isLoggedIn)
+                {
+                    try
+                    {
+                        var request = (HttpWebRequest)WebRequest.Create("http://www.reddit.com/reddits/mine.json");
+                        request.CookieContainer = new CookieContainer();
+                        
+                        Cookie c = new Cookie("reddit_session", App.cookie.Replace(",", "%2C"));
+                        request.CookieContainer.Add(new Uri("http://www.reddit.com"), c);
+
+                        RequestState rs = new RequestState();
+                        rs.Request = request;
+
+                        var response = request.BeginGetResponse(new AsyncCallback(RespCallback), rs);
+                        //LoadCollection(response);
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+                else
+                {
+                    var client = new HttpClient();
+                    var response = client.GetAsync("http://www.reddit.com/reddits.json").Result.Content;
+                    LoadCollection(response);
+                }
             }
             else
             {
@@ -92,10 +128,11 @@ namespace redditMetro
             accountSettings.Margin = ThicknessHelper.FromUniformLength(0);
         }
 
-        private void LoadCollection(HttpContent messageTask)
+        private async void LoadCollection(Stream contentStream)
         {
             DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(SubredditResponse));
-            var data = (SubredditResponse)deserializer.ReadObject(messageTask.ContentReadStream);
+            var data = (SubredditResponse)deserializer.ReadObject(contentStream);
+
             foreach (Subreddit r in data.data.children)
             {
                 if (r.data.url.ToLower().Contains("/r/pics"))
@@ -140,7 +177,17 @@ namespace redditMetro
                     r.data.image = "/Images/reddit.com.header.png";
             }
             App.Subreddits = data.data.children;
-            CollectionViewSource.Source = data.data.children;
+
+            Dispatcher.Invoke(Windows.UI.Core.CoreDispatcherPriority.Normal, (x, y) =>
+                {
+                    CollectionViewSource.Source = data.data.children;
+                }, this, null);
+            //CollectionViewSource.Source = data.data.children;
+        }
+        
+        private void LoadCollection(HttpContent messageTask)
+        {
+            LoadCollection(messageTask.ContentReadStream);            
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)

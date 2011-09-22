@@ -49,6 +49,7 @@
     <Compile Include="Converters\UriConverter.cs" />
     <Compile Include="Models\ListingResponse.cs" />
     <Compile Include="Models\LoginResponse.cs" />
+    <Compile Include="Models\RequestState.cs" />
     <Compile Include="Models\SubredditResponse.cs" />
     <Compile Include="SplitPage.xaml.cs">
       <DependentUpon>SplitPage.xaml</DependentUpon>

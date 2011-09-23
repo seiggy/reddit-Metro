@@ -14,6 +14,7 @@ using Windows.ApplicationModel.Search;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
 using Windows.Security.Credentials;
+using Windows.System.Threading;
 
 namespace redditMetro
 {
@@ -44,8 +45,15 @@ namespace redditMetro
         public async static void LoadSettings()
         {
             //PasswordCredential cred = new PasswordCredential("redditMetro", Settings["UserName"].ToString(), Settings["Password"].ToString());
-            PasswordVault = new PasswordVault();
-            
+            try
+            {
+                PasswordVault = new PasswordVault();
+            }
+            catch (Exception)
+            {
+                // wtf is going on here!
+            }
+
             var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             var container = localSettings.CreateContainer(CONTAINER_NAME, ApplicationDataCreateDisposition.Always);
             Settings = container.Values;
@@ -56,7 +64,7 @@ namespace redditMetro
 
             if (!String.IsNullOrEmpty(Settings["UserName"].ToString()) && (bool)Settings["SavePassword"])
             {
-                await Task.Run(() => { LoginReddit(); });
+                LoginReddit();
             }
             else
             {
@@ -117,7 +125,10 @@ namespace redditMetro
             }
         }
 
-        private async static void LoginReddit()
+        /// <summary>
+        /// TODO: Make ASYNC when MS fixes PasswordVault.FindAllByResource threading issues
+        /// </summary>
+        private static void LoginReddit()
         {
             var client = new HttpClient();
             client.BaseAddress = new Uri("http://www.reddit.com/api/");
@@ -125,41 +136,52 @@ namespace redditMetro
             Dictionary<string, string> values = new Dictionary<string, string>();
             values.Add("api_type", "json");
             values.Add("user", Settings["UserName"].ToString());
-            var passwords = PasswordVault.FindAllByResource("redditMetro");
 
-            foreach (var pass in passwords)
+            try
             {
-                if (pass.UserName == Settings["UserName"].ToString())
+                
+                IReadOnlyList<IPasswordCredential> passwords = null;
+                passwords = PasswordVault.FindAllByResource("redditMetro");
+
+
+                foreach (var pass in passwords)
                 {
-                    pass.RetrievePassword();
-                    values.Add("passwd", pass.Password);
-                    break;
+                    if (pass.UserName == Settings["UserName"].ToString())
+                    {
+                        pass.RetrievePassword();
+                        values.Add("passwd", pass.Password);
+                        break;
+                    }
+                }
+
+                FormUrlEncodedContent content = new FormUrlEncodedContent(values);
+
+                var response = client.PostAsync("login/" + Settings["UserName"].ToString(), content).Result;
+                var stream = response.EnsureSuccessStatusCode().Content.ContentReadStream;
+                DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(LoginResponse));
+                var data = (LoginResponse)deserializer.ReadObject(stream);
+                if (data.json.errors.Count == 0)
+                {
+                    App.modhash = data.json.data.modhash;
+                    App.cookie = data.json.data.cookie;
+                    App.isLoggedIn = true;
+                }
+                else
+                {
+                    // password was probably bad, so we'll set it back to ""
+                    App.isLoggedIn = false;
+                    Settings["Password"] = "";
+                    var passes = PasswordVault.FindAllByResource("redditMetro");
+                    foreach (var i in passes)
+                    {
+                        if (i.UserName == Settings["UserName"].ToString())
+                            PasswordVault.Remove(i);
+                    }
                 }
             }
-
-            FormUrlEncodedContent content = new FormUrlEncodedContent(values);
-
-            var response = await client.PostAsync("login/" + Settings["UserName"].ToString(), content);
-            var stream = response.EnsureSuccessStatusCode().Content.ContentReadStream;
-            DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(LoginResponse));
-            var data = (LoginResponse)deserializer.ReadObject(stream);
-            if (data.json.errors.Count == 0)
+            catch (Exception)
             {
-                App.modhash = data.json.data.modhash;
-                App.cookie = data.json.data.cookie;
-                App.isLoggedIn = true;
-            }
-            else
-            {
-                // password was probably bad, so we'll set it back to ""
-                App.isLoggedIn = false;
-                Settings["Password"] = "";
-                var passes = PasswordVault.FindAllByResource("redditMetro");
-                foreach (var i in passes)
-                {
-                    if (i.UserName == Settings["UserName"].ToString())
-                        PasswordVault.Remove(i);
-                }
+
             }
         }
     }

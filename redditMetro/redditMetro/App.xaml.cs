@@ -36,6 +36,8 @@ namespace redditMetro
         public static string cookie { get; set; }
         public static bool isLoggedIn { get; set; }
         public static PasswordVault PasswordVault { get; set; }
+        private static string basefilepath = "";
+        public static string BaseFilePath { get { return basefilepath; } set { basefilepath = value; } }
 
         public App()
         {

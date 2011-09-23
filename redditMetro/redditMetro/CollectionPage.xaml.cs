@@ -73,6 +73,8 @@ namespace redditMetro
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            //App.BaseFilePath = this.BaseUri.AbsolutePath;
+            
             App.SearchPane = SearchPane.GetForCurrentView();
             if (_displayHandler == null)
             {
@@ -144,45 +146,45 @@ namespace redditMetro
             foreach (Subreddit r in data.data.children)
             {
                 if (r.data.url.ToLower().Contains("/r/pics"))
-                    r.data.image = "/Images/r.pics.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.pics.png";
                 else if (r.data.url.ToLower().Contains("/r/gaming"))
-                    r.data.image = "/Images/r.gaming.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.gaming.png";
                 else if (r.data.url.ToLower().Contains("/r/askreddit"))
-                    r.data.image = "/Images/r.askreddit.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.askreddit.png";
                 else if (r.data.url.ToLower().Contains("/r/atheism"))
-                    r.data.image = "/Images/r.atheism.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.atheism.png";
                 else if (r.data.url.ToLower().Contains("/r/circlejerk"))
-                    r.data.image = "/Images/r.circlejerk.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.circlejerk.png";
                 else if (r.data.url.ToLower().Contains("/r/comics"))
-                    r.data.image = "/Images/r.comics.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.comics.png";
                 else if (r.data.url.ToLower().Contains("/r/fffffffuuuuuuuuuuuu"))
-                    r.data.image = "/Images/r.fu.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.fu.png";
                 else if (r.data.url.ToLower().Contains("/r/iama"))
-                    r.data.image = "/Images/r.iama.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.iama.png";
                 else if (r.data.url.ToLower().Contains("/r/minecraft"))
-                    r.data.image = "/Images/r.minecraft.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.minecraft.png";
                 else if (r.data.url.ToLower().Contains("/r/music"))
-                    r.data.image = "/Images/r.music.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.music.png";
                 else if (r.data.url.ToLower().Contains("/r/science"))
-                    r.data.image = "/Images/r.science.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.science.png";
                 else if (r.data.url.ToLower().Contains("/r/technology"))
-                    r.data.image = "/Images/r.technology.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.technology.png";
                 else if (r.data.url.ToLower().Contains("/r/tf2"))
-                    r.data.image = "/Images/r.tf2.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.tf2.png";
                 else if (r.data.url.ToLower().Contains("/r/todayilearned"))
-                    r.data.image = "/Images/r.todayilearned.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.todayilearned.png";
                 else if (r.data.url.ToLower().Contains("/r/trees"))
-                    r.data.image = "/Images/r.trees.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.trees.png";
                 else if (r.data.url.ToLower().Contains("/r/twoxchromosomes"))
-                    r.data.image = "/Images/r.twoxchromosomes.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.twoxchromosomes.png";
                 else if (r.data.url.ToLower().Contains("/r/videos"))
-                    r.data.image = "/Images/r.videos.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.videos.png";
                 else if (r.data.url.ToLower().Contains("/r/worldnews"))
-                    r.data.image = "/Images/r.worldnews.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.worldnews.png";
                 else if (r.data.url.ToLower().Contains("/r/wtf"))
-                    r.data.image = "/Images/r.wtf.png";
+                    r.data.image = App.BaseFilePath + "/Images/r.wtf.png";
                 else
-                    r.data.image = "/Images/reddit.com.header.png";
+                    r.data.image = App.BaseFilePath + "/Images/reddit.com.header.png";
             }
             App.Subreddits.AddRange(data.data.children);
 

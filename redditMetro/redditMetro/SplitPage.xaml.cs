@@ -206,9 +206,9 @@ namespace redditMetro
                 else if (!o.data.is_self && !string.IsNullOrEmpty(o.data.thumbnail))
                     o.data.thumbnail = "http://www.reddit.com" + o.data.thumbnail;
                 else if (o.data.is_self)
-                    o.data.thumbnail = "/Images/self_default2.png";
+                    o.data.thumbnail = this.BaseUri.AbsoluteUri + "/Images/self_default2.png";
                 else
-                    o.data.thumbnail = "/Images/noimage.png";
+                    o.data.thumbnail = this.BaseUri.AbsoluteUri + "/Images/noimage.png";
             }
             PageTitle.Text = App.SelectedSubreddit.data.url;
             App.Posts = data.data;

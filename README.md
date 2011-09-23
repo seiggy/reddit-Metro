@@ -5,6 +5,11 @@ reddit Metro is a Windows 8 Metro UI based application for browsing reddit, chec
 
 Current Features
 ----------------
+>### v.5
+> * Hopefully fixed the "Black Screen of Doom" issues by resizing all the subreddit header images
+> * Fixed some issues with the PasswordVault. Will need to return to this on next SDK update to re-build these methods as async when PasswordVault works properly.
+
+
 >### v.4
 > * Added login settings with remember password feature
 > * Login now uses Windows Password Store. This provides secure storage container for user's info.

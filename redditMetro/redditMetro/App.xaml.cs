@@ -15,6 +15,7 @@ using System.Net.Http;
 using System.Runtime.Serialization.Json;
 using Windows.Security.Credentials;
 using Windows.System.Threading;
+using redditMetro.Collections;
 
 namespace redditMetro
 {
@@ -23,7 +24,7 @@ namespace redditMetro
         // TODO: Create a data model appropriate for your problem domain to replace the sample data
         private static SampleDataSource _sampleData;
 
-        public static List<Subreddit> Subreddits { get; set; }
+        public static RedditCollection Subreddits = new RedditCollection();
         public static ListingResponse Posts { get; set; }
         public static Subreddit SelectedSubreddit { get; set; }
         public static Subreddit PreviousSubreddit { get; set; }
@@ -38,6 +39,7 @@ namespace redditMetro
         public static PasswordVault PasswordVault { get; set; }
         private static string basefilepath = "";
         public static string BaseFilePath { get { return basefilepath; } set { basefilepath = value; } }
+        public static HttpClient JsonClient { get; set; }
 
         public App()
         {
@@ -86,7 +88,7 @@ namespace redditMetro
         {
             var page = new CollectionPage();
             if (_sampleData == null) _sampleData = new SampleDataSource(page.BaseUri);
-            page.Items = _sampleData.GroupedCollections.Select((obj) => (Object)obj);
+            //page.Items = _sampleData.GroupedCollections.Select((obj) => (Object)obj);
             Window.Current.Content = page;
         }
 
@@ -132,8 +134,8 @@ namespace redditMetro
         /// </summary>
         private static void LoginReddit()
         {
-            var client = new HttpClient();
-            client.BaseAddress = new Uri("http://www.reddit.com/api/");
+            JsonClient = new HttpClient();
+            JsonClient.BaseAddress = new Uri("http://www.reddit.com/api/");
 
             Dictionary<string, string> values = new Dictionary<string, string>();
             values.Add("api_type", "json");
@@ -158,7 +160,7 @@ namespace redditMetro
 
                 FormUrlEncodedContent content = new FormUrlEncodedContent(values);
 
-                var response = client.PostAsync("login/" + Settings["UserName"].ToString(), content).Result;
+                var response = JsonClient.PostAsync("login/" + Settings["UserName"].ToString(), content).Result;
                 var stream = response.EnsureSuccessStatusCode().Content.ContentReadStream;
                 DataContractJsonSerializer deserializer = new DataContractJsonSerializer(typeof(LoginResponse));
                 var data = (LoginResponse)deserializer.ReadObject(stream);

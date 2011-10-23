@@ -14,6 +14,10 @@
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <PackageCertificateThumbprint>268806FD452305D340F03A27252797FBC4B54E66</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>redditMetro_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -46,6 +50,8 @@
     <Compile Include="CollectionPage.xaml.cs">
       <DependentUpon>CollectionPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Collections\ObservableVector.cs" />
+    <Compile Include="Collections\RedditCollection.cs" />
     <Compile Include="Converters\UriConverter.cs" />
     <Compile Include="Models\ListingResponse.cs" />
     <Compile Include="Models\LoginResponse.cs" />
@@ -180,6 +186,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="redditMetro_TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="NewFolder1\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v1.0\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

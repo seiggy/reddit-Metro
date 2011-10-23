@@ -4,12 +4,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="using:redditMetro.Controls"
+    xmlns:coll="using:redditMetro.Collections"
+    xmlns:app="using:redditMetro"
     Loaded="Page_Loaded" Unloaded="Page_Unloaded"
     mc:Ignorable="d"
     d:DesignHeight="768" d:DesignWidth="1366">
 
     <UserControl.Resources>
-        <CollectionViewSource x:Name="CollectionViewSource" x:Key="CollectionViewSource" />
     </UserControl.Resources>
 
     <!-- Page Content -->
@@ -69,10 +70,10 @@
             <TextBlock x:Name="PageTitle" Text="{StaticResource AppName}" Style="{StaticResource PageTitleStyle}" Grid.Column="1" />
         </Grid>
 
-        <GridView x:Name="ItemGridView" ItemsSource="{Binding Source={StaticResource CollectionViewSource}}" ItemTemplate="{StaticResource GroupedItemTemplate}" ItemContainerStyle="{StaticResource GridTileStyle}" ItemsPanel="{StaticResource GridItemsPanelTemplate}"
-              Grid.Row="1" Background="{StaticResource PageBackgroundBrush}" BorderThickness="0" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollMode="Enabled" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+        <GridView x:Name="ItemGridView" ItemTemplate="{StaticResource GroupedItemTemplate}" ItemContainerStyle="{StaticResource GridTileStyle}" ItemsPanel="{StaticResource GridItemsPanelTemplate}"
+              Grid.Row="1" Background="{StaticResource PageBackgroundBrush}" BorderThickness="0" VerticalAlignment="Stretch" ScrollViewer.HorizontalScrollMode="Enabled" ScrollViewer.HorizontalScrollBarVisibility="Auto" IncrementalLoadingThreshold="25" PreferIncrementalLoading="True"
               SelectionChanged="ItemView_SelectionChanged" />
-        <ListView x:Name="ItemListView" ItemsSource="{Binding Source={StaticResource CollectionViewSource}}" ItemTemplate="{StaticResource PortraitListItemTemplate}" ItemContainerStyle="{StaticResource ListTileStyle}"  ItemsPanel="{StaticResource PortraitListItemsPanelTemplate}"
+        <ListView x:Name="ItemListView" ItemTemplate="{StaticResource PortraitListItemTemplate}" ItemContainerStyle="{StaticResource ListTileStyle}"  ItemsPanel="{StaticResource PortraitListItemsPanelTemplate}"
               Visibility="Collapsed" Grid.Row="1" Background="{StaticResource PageBackgroundBrush}" BorderThickness="0" VerticalAlignment="Stretch"
               SelectionChanged="ItemView_SelectionChanged"/>
         <ApplicationBar VerticalAlignment="Bottom" DismissMode="LightDismiss" Background="#9BBBDB" Grid.Row="1">

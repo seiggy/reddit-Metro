@@ -10,34 +10,23 @@ using Windows.Foundation.Collections;
 
 namespace Databinding
 {
-    //NOTE: This a concrete implementation of IObservableVector<T> which will raise change notifications
-    //NOTE: Currently ObservableCollection does not support change notifications so in the interim please use the extension method ToObservableVector<T>
-    public class ObservableVector<T> : IObservableVector<T>, IList<T>, IEnumerable<T>, IEnumerable
+    public class ObservableVector : IObservableVector<object>, IEnumerable
     {
-        private IList<T> _internalCollection;
-        private ReadOnlyCollection<T> _readOnlyCollection;
+        private IList<object> _internalCollection;
+        private ReadOnlyCollection<object> _readOnlyCollection;
 
-        public ObservableVector(INotifyCollectionChanged list)
+        public ObservableVector()
         {
-            if (list is IList<T>)
-            {
-                _internalCollection = list as IList<T>;
-                _readOnlyCollection = new ReadOnlyCollection<T>((IList<T>)list);
-            }
-            else
-            {
-                throw new Exception("Must implement IList<T>");
-            }
+            _internalCollection = new List<object>();
+            _readOnlyCollection = new ReadOnlyCollection<object>(_internalCollection);
         }
 
-        #region IList<object> Members
-
-        public int IndexOf(T item)
+        public int IndexOf(object item)
         {
             return _internalCollection.IndexOf(item);
         }
 
-        public void Insert(int index, T item)
+        public void Insert(int index, object item)
         {
             _internalCollection.Insert(index, item);
 
@@ -57,7 +46,7 @@ namespace Databinding
             }
         }
 
-        public T this[int index]
+        public object this[int index]
         {
             get
             {
@@ -74,11 +63,7 @@ namespace Databinding
             }
         }
 
-        #endregion
-
-        #region ICollection<object> Members
-
-        public void Add(T item)
+        public void Add(object item)
         {
             _internalCollection.Add(item);
 
@@ -88,33 +73,27 @@ namespace Databinding
             }
         }
 
-        public bool Contains(T item)
+        public bool Contains(object item)
         {
             return _internalCollection.Contains(item);
         }
 
-        public void CopyTo(T[] array, int arrayIndex)
+        public void CopyTo(object[] array, int arrayIndex)
         {
             _internalCollection.CopyTo(array, arrayIndex);
         }
 
         public int Count
         {
-            get
-            {
-                return _internalCollection.Count;
-            }
+            get { return _internalCollection.Count; }
         }
 
         public bool IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
-        public bool Remove(T item)
+        public bool Remove(object item)
         {
             int index = _internalCollection.IndexOf(item);
             bool retVal = _internalCollection.Remove(item);
@@ -123,50 +102,29 @@ namespace Databinding
             {
                 VectorChanged(this, new VectorChangedEventArgs { CollectionChange = CollectionChange.ItemRemoved, Index = (uint)index });
             }
-
             return retVal;
         }
-
-        #endregion
-
-        #region IIterable<object> Members
 
         public Windows.Foundation.Collections.IIterator<object> First()
         {
             throw new NotImplementedException();
         }
 
-        #endregion
-
-        #region IEnumerable Members
-
         public IEnumerator GetEnumerator()
         {
             return _internalCollection.GetEnumerator();
         }
 
-        #endregion
-
-        #region IEnumerable<object> Members
-
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        IEnumerator<object> IEnumerable<object>.GetEnumerator()
         {
             return _internalCollection.GetEnumerator();
         }
+                
+        public event VectorChangedEventHandler<object> VectorChanged;
 
-        #endregion
-
-        #region IObservableVector<object> Members
-
-        public event VectorChangedEventHandler<T> VectorChanged;
-
-        #endregion
-
-        #region IVector<object> Members
-
-        public void Append(T value)
+        public void Append(object value)
         {
-            _internalCollection.Add(value);
+            this.Add(value);
 
             if (VectorChanged != null)
             {
@@ -176,7 +134,7 @@ namespace Databinding
 
         public void Clear()
         {
-            _internalCollection.Clear();
+            this.Clear();
 
             if (VectorChanged != null)
             {
@@ -186,7 +144,7 @@ namespace Databinding
 
         public object GetAt(uint index)
         {
-            return _internalCollection[(int)index];
+            return this[(int)index];
         }
 
         public uint GetMany(uint startIndex, object[] items)
@@ -194,20 +152,20 @@ namespace Databinding
             throw new NotImplementedException();
         }
 
-        public IReadOnlyList<T> GetView()
+        public IReadOnlyList<object> GetView()
         {
             return _readOnlyCollection;
         }
 
-        public bool IndexOf(T value, out uint index)
+        public bool IndexOf(object value, out uint index)
         {
-            index = (uint)_internalCollection.IndexOf(value);
+            index = (uint)this.IndexOf(value);
             return true;
         }
 
-        public void InsertAt(uint index, T value)
+        public void InsertAt(uint index, object value)
         {
-            _internalCollection.Insert((int)index, value);
+            this.Insert((int)index, value);
 
             if (VectorChanged != null)
             {
@@ -217,9 +175,9 @@ namespace Databinding
 
         public void RemoveAt(uint index)
         {
-            _internalCollection.RemoveAt((int)index);
+            this.RemoveAt((int)index);
 
-            if (VectorChanged != null)
+            if(VectorChanged != null)
             {
                 VectorChanged(this, new VectorChangedEventArgs { CollectionChange = CollectionChange.ItemRemoved, Index = index });
             }
@@ -227,9 +185,9 @@ namespace Databinding
 
         public void RemoveAtEnd()
         {
-            _internalCollection.RemoveAt(_internalCollection.Count - 1);
+            this.RemoveAt(_internalCollection.Count - 1);
 
-            if (VectorChanged != null)
+            if(VectorChanged != null)
             {
                 VectorChanged(this, new VectorChangedEventArgs { CollectionChange = CollectionChange.ItemRemoved, Index = (uint)(_internalCollection.Count - 1) });
             }
@@ -240,9 +198,9 @@ namespace Databinding
             throw new NotImplementedException();
         }
 
-        public void SetAt(uint index, T value)
+        public void SetAt(uint index, object value)
         {
-            _internalCollection[(int)index] = value;
+            this[(int)index] = value;
 
             if (VectorChanged != null)
             {
@@ -254,17 +212,13 @@ namespace Databinding
         {
             get
             {
-                return (uint)_internalCollection.Count;
+                return (uint)this.Count;
             }
         }
-
-        #endregion
     }
 
     public class VectorChangedEventArgs : IVectorChangedEventArgs
     {
-        #region IVectorChangedEventArgs Members
-
         public CollectionChange CollectionChange
         {
             get;
@@ -275,16 +229,6 @@ namespace Databinding
         {
             get;
             set;
-        }
-
-        #endregion
-    }
-
-    public static class ObservableVectorExtensionClass
-    {
-        public static ObservableVector<T> ToObservableVector<T>(this INotifyCollectionChanged s)
-        {
-            return new ObservableVector<T>(s);
         }
     }
 }

@@ -177,8 +177,8 @@ namespace redditMetro
 
             if (App.PreviousSubreddit == null || App.PreviousSubreddit != App.SelectedSubreddit || App.LastRefresh < DateTime.Now.Subtract(App.RefreshInterval))
             {
-                var client = new HttpClient();
-                var response = client.GetAsync("http://www.reddit.com" + App.SelectedSubreddit.data.url + ".json").Result.Content;
+                App.JsonClient = new HttpClient();
+                var response = App.JsonClient.GetAsync("http://www.reddit.com" + App.SelectedSubreddit.data.url + ".json").Result.Content;
                 LoadCollection(response);
                 App.LastRefresh = DateTime.Now;
             }

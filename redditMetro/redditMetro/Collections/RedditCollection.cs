@@ -1,116 +1,47 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml.Data;
-using Windows.Foundation;
-using System.Net;
-using redditMetro.Models;
-using System.Net.Http;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization.Json;
-using Windows.Foundation.Collections;
+using System.Threading.Tasks;
 using Databinding;
-using System.Collections.Specialized;
-using System.Collections.ObjectModel;
+using redditMetro.Models;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml.Data;
+//using Databinding;
 
 namespace redditMetro.Collections
 {
-    public class RedditCollectionResult : IAsyncOperation<LoadMoreItemsResult>
-    {
-        public LoadMoreItemsResult Result;
-        AsyncStatus status = AsyncStatus.Created;
-        uint id = 0;
-        Exception error;
-
-        public RedditCollectionResult()
-        {
-            Result = new LoadMoreItemsResult();
-            id = (uint)new Random().Next();
-            error = null;
-        }
-
-        public AsyncOperationCompletedHandler<LoadMoreItemsResult> Completed
-        {
-            get;
-            set;
-        }
-        
-        public LoadMoreItemsResult GetResults()
-        {
-            return Result;
-        }
-
-        public void Cancel()
-        {
-            this.status = AsyncStatus.Canceled;
-            Result.Count = 0;
-        }
-
-        public void Close()
-        {
-            this.status = AsyncStatus.Completed;
-            if (Completed != null)
-                Completed(this);
-        }
-
-        public Exception ErrorCode
-        {
-            get { return this.error; }
-            set { this.error = value; }
-        }
-
-        public uint Id
-        {
-            get { return this.id; }
-        }
-
-        public void Start()
-        {
-            this.status = AsyncStatus.Started;
-        }
-
-        public AsyncStatus Status
-        {
-            get { return this.status; }
-            set { this.status = value; }
-        }
-    }
-
-    public class RedditCollection : IObservableVector<object>, IIncrementalLoadingVector
+    public class RedditCollection : Databinding.ObservableVector, IIncrementalLoadingVector
     {
         bool hasMoreItems = false;
         string nextItems = "";
         string username = "";
-        string password = "";
-        private IList<object> list;
-        private ReadOnlyCollection<object> readOnlyList;
                 
         public bool LoggedIn { get; set; }
-
-        public IList<object> Items
-        {
-            get { return this.list; }
-            set { this.list = value; }
-        }
-
-        public RedditCollection(INotifyCollectionChanged list)
+        
+        public RedditCollection()
         {
             LoggedIn = false;
-            var ob = list.ToObservableVector<object>();
-            this.list = ob.ToList<object>();
-            readOnlyList = new ReadOnlyCollection<object>((IList<object>)list);
             hasMoreItems = true;
             //Task.Run(() => { LoadMoreItemsAsync(0); });
         }
 
-        public RedditCollection(INotifyCollectionChanged list, bool isLoggedIn)
+        void list_VectorChanged(IObservableVector<object> sender, IVectorChangedEventArgs @event)
+        {
+            // dunno if we should do anything here?
+            if (CollectionChanged != null)
+            {
+                CollectionChanged(sender, @event);
+            }
+        }
+
+        public event VectorChangedEventHandler<object> CollectionChanged;
+
+        public RedditCollection(bool isLoggedIn)
         {
             LoggedIn = isLoggedIn;
-            var ob = list.ToObservableVector<object>();
-            this.list = ob.ToList<object>();
-            readOnlyList = new ReadOnlyCollection<object>((IList<object>)list);
             hasMoreItems = true;
             //Task.Run(() => { LoadMoreItemsAsync(0); });
         }
@@ -120,71 +51,74 @@ namespace redditMetro.Collections
             get { return this.username; }
             set { this.username = value; }
         }
-
-        public string Password
-        {
-            get { return this.password; }
-            set { this.password = value; }
-        }
-
-        public bool HasMoreItems
+        
+        public bool IIncrementalLoadingVector.HasMoreItems
         {
             get { return this.hasMoreItems; }
         }
 
         public event AsyncOperationCompletedHandler<LoadMoreItemsResult> Completed;
 
-        private RedditCollectionResult result;
 
+        
         /// <summary>
         /// requires us to take in count, not sure that we'll use it, or if we can ignore it, 
         /// since reddit always operates on collections of 25 at a time...could complicate things...
         /// </summary>
         /// <param name="count">number of items to load...we'll always be loading 25 for now</param>
         /// <returns></returns>
+        //public IAsyncOperation<LoadMoreItemsResult> IIncrementalLoadingVector.LoadMoreItemsAsync(uint count)
+        //{
+            //Task.Run(() =>
+            //    {
+            //        if (this.LoggedIn)
+            //        {
+            //            try
+            //            {
+            //                HttpClientHandler handler = new HttpClientHandler();
+                            
+            //                //var request = (HttpWebRequest)WebRequest.Create("http://www.reddit.com/reddits/mine.json");
+            //                //request.CookieContainer = new CookieContainer();
+
+            //                Cookie c = new Cookie("reddit_session", App.cookie.Replace(",", "%2C"));
+            //                handler.CookieContainer.Add(new Uri("http://www.reddit.com"), c);
+
+            //                App.JsonClient = new HttpClient(handler);
+                                                        
+            //                var response = App.JsonClient.GetAsync("http://www.reddit.com/reddits/mine.json").Result.Content;
+            //                LoadCollection(response);
+            //            }
+            //            catch (Exception)
+            //            {
+
+            //            }
+            //        }
+            //        else
+            //        {
+            //            App.JsonClient = new HttpClient();
+            //            var response = App.JsonClient.GetAsync("http://www.reddit.com/reddits.json").Result.Content;
+            //            LoadCollection(response);
+            //        }
+            //    });
+            //return result;
+        //}
+
         public IAsyncOperation<LoadMoreItemsResult> LoadMoreItemsAsync(uint count)
         {
-            result = new RedditCollectionResult();
-            result.Start();
-            Task.Run(() =>
-                {
-                    if (this.LoggedIn)
-                    {
-                        try
-                        {
-                            var request = (HttpWebRequest)WebRequest.Create("http://www.reddit.com/reddits/mine.json");
-                            request.CookieContainer = new CookieContainer();
-
-                            Cookie c = new Cookie("reddit_session", App.cookie.Replace(",", "%2C"));
-                            request.CookieContainer.Add(new Uri("http://www.reddit.com"), c);
-
-                            RequestState rs = new RequestState();
-                            rs.Request = request;
-
-                            var response = request.BeginGetResponse(new AsyncCallback(RespCallback), rs);
-                            //LoadCollection(response);
-                        }
-                        catch (Exception)
-                        {
-
-                        }
-                    }
-                    else
-                    {
-                        var client = new HttpClient();
-                        var response = client.GetAsync("http://www.reddit.com/reddits.json").Result.Content;
-                        LoadCollection(response);
-                    }
-                });
-            return result;
+            return new AsyncRedditLoader(this, count);
         }
 
-        private async void LoadCollection(HttpContent response)
+        private void AppendCollections()
+        {
+            
+        }
+
+        public async Task LoadCollection(HttpContent response)
         {
             await Task.Run(() => { LoadCollection(response.ContentReadStream); });
         }
 
-        private async void LoadCollection(Stream responseStream)
+        public async Task LoadCollection(Stream responseStream)
         {
             SubredditResponse data = new SubredditResponse();
             await Task.Run(() =>
@@ -238,7 +172,7 @@ namespace redditMetro.Collections
             //App.Subreddits = data.data.children;
             foreach (Subreddit subreddit in data.data.children)
             {
-                list.Add(subreddit);
+                this.Add(subreddit);
             }
 
             if (data.data.after != null)
@@ -252,9 +186,7 @@ namespace redditMetro.Collections
                 this.nextItems = "";
                 this.hasMoreItems = false;
             }
-            result.Result.Count = (uint)list.Count;
-            result.Close();
-            Completed(result);
+            //Completed(result);
             //VectorChanged(this, new VectorChangedEventArgs());
             //VectorChanged(this, null);
         }
@@ -268,79 +200,101 @@ namespace redditMetro.Collections
             rs.ResponseStream = responseStream;
             LoadCollection(responseStream);
         }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        
+        class AsyncRedditLoader : IAsyncOperation<LoadMoreItemsResult>
         {
-            return list.GetEnumerator();
-        }
+            private RedditCollection _rl;
+            private uint _count;
 
-        public event VectorChangedEventHandler<object> VectorChanged;
-
-        public int IndexOf(object item)
-        {
-            return list.IndexOf(item);
-        }
-
-        public void Insert(int index, object item)
-        {
-            list.Insert(index, item);
-        }
-
-        public void RemoveAt(int index)
-        {
-            list.RemoveAt(index);
-        }
-
-        public object this[int index]
-        {
-            get
+            public AsyncRedditLoader(RedditCollection rl, uint count)
             {
-                return list[index];
+                _rl = rl;
+                _count = count;
             }
-            set
+
+            private AsyncOperationCompletedHandler<LoadMoreItemsResult> _completed;
+
+            AsyncOperationCompletedHandler<LoadMoreItemsResult> IAsyncOperation<LoadMoreItemsResult>.Completed
             {
-                list[index] = value;
+                get { return _completed; }
+                set { _completed = value; }
             }
-        }
 
-        public void Add(object item)
-        {
-            list.Add(item);
-        }
+            protected virtual void OnDownloadComplete()
+            {
+                if (null != _completed)
+                {
+                    _completed(this);
+                }
+            }
 
-        public void Clear()
-        {
-            list.Clear();
-        }
+            LoadMoreItemsResult IAsyncOperation<LoadMoreItemsResult>.GetResults()
+            {
+                return new LoadMoreItemsResult { Count = _count };
+            }
 
-        public bool Contains(object item)
-        {
-            return list.Contains(item);
-        }
+            void IAsyncInfo.Start()
+            {
+                if (null != _rl)
+                {
+                    // get reddits
+                    if (_rl.LoggedIn)
+                    {
+                        try
+                        {
+                            HttpClientHandler handler = new HttpClientHandler();
 
-        public void CopyTo(object[] array, int arrayIndex)
-        {
-            list.CopyTo(array, arrayIndex);
-        }
+                            //var request = (HttpWebRequest)WebRequest.Create("http://www.reddit.com/reddits/mine.json");
+                            //request.CookieContainer = new CookieContainer();
 
-        public int Count
-        {
-            get { return list.Count; }
-        }
+                            Cookie c = new Cookie("reddit_session", App.cookie.Replace(",", "%2C"));
+                            handler.CookieContainer.Add(new Uri("http://www.reddit.com"), c);
 
-        public bool IsReadOnly
-        {
-            get { return list.IsReadOnly; }
-        }
+                            App.JsonClient = new HttpClient(handler);
 
-        public bool Remove(object item)
-        {
-            return list.Remove(item);
-        }
+                            var response = App.JsonClient.GetAsync("http://www.reddit.com/reddits/mine.json").Result.Content;
+                            _rl.LoadCollection(response);
+                        }
+                        catch (Exception)
+                        {
 
-        IEnumerator<object> IEnumerable<object>.GetEnumerator()
-        {
-            return list.GetEnumerator();
+                        }
+                    }
+                    else
+                    {
+                        App.JsonClient = new HttpClient();
+                        var response = App.JsonClient.GetAsync("http://www.reddit.com/reddits.json").Result.Content;
+                        _rl.LoadCollection(response);
+                    }
+
+                    OnDownloadComplete();
+                }
+            }
+
+            void IAsyncInfo.Cancel()
+            {
+                throw new NotImplementedException();
+            }
+
+            void IAsyncInfo.Close()
+            {
+
+            }
+
+            Exception IAsyncInfo.ErrorCode
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            uint IAsyncInfo.Id
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            AsyncStatus IAsyncInfo.Status
+            {
+                get { throw new NotImplementedException(); }
+            }
         }
     }
 }

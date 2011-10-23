@@ -4,6 +4,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "redditMetro", "redditMetro\redditMetro.csproj", "{35D7A430-1461-413F-B390-3A1FB1AAA39C}"
 EndProject
 Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccLocalPath0 = .
+		SccLocalPath1 = redditMetro
+		SccNumberOfProjects = 2
+		SccProjectName1 = redditMetro
+		SccProjectUniqueName1 = redditMetro\\redditMetro.csproj
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs05
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
